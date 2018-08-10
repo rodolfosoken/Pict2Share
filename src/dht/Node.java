@@ -5,26 +5,26 @@ public class Node {
 	private String id;
 	private String prev;
 	private String next;
-	private String value;
+	private String data;
 	
 	
 	
 	
 	
-	public Node(String id, String value) {
+	public Node(String id, String data) {
 		super();
 		this.id = id;
-		this.value = value;
+		this.data = data;
 	}
 
 
 
-	public Node(String id, String prev, String next, String value) {
+	public Node(String id, String prev, String next, String data) {
 		super();
 		this.id = id;
 		this.prev = prev;
 		this.next = next;
-		this.value = value;
+		this.data = data;
 	}
 
 
@@ -84,19 +84,19 @@ public class Node {
 
 
 	/**
-	 * @return the value
+	 * @return the Data
 	 */
-	public String getValue() {
-		return value;
+	public String getData() {
+		return data;
 	}
 
 
 
 	/**
-	 * @param value the value to set
+	 * @param data the data to set
 	 */
-	public void setValue(String value) {
-		this.value = value;
+	public void setData(String data) {
+		this.data = data;
 	}
 
 
@@ -107,8 +107,22 @@ public class Node {
 	}
 	
 	@Override
+	public boolean equals(Object other){
+		// se ambos possuem o mesmo endereço, então são iguais
+		if(this == other) return true;
+		// se não pertencem a mesma classe então são diferentes
+		if(!(other instanceof Node)) return false; 
+		//agora podemos converter para a classe
+		Node otherObj = (Node)other; 
+		// se possuem o mesmo código e valor, então são iguais
+		return this.getId().equals(otherObj.getId()) && 
+				this.getData().equals(otherObj.getData());
+	}
+	
+	@Override
 	public int hashCode() {
 		return id.hashCode();
 	}
+	
 
 }

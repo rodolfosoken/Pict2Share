@@ -1,9 +1,16 @@
 package controller;
 
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import dht.DHT;
@@ -24,10 +31,12 @@ public class ControllerAlbum {
 	public ControllerAlbum(ViewAlbum view, DHT dht) {
 		this.view = view;
 		this.dht = dht;
+		this.picture = new Picture();
 		
 		//Adiciona os listeners da view
 		view.addConectaListener(new ConectaListener());	
 		view.addDesconectaListener(new DesconectaListener());
+		view.addCarregarImgListener(new CarregaImgListener());
 	}
 	
 	/**
@@ -63,6 +72,41 @@ public class ControllerAlbum {
 			dht.leave();
 			view.setStatus("Desconectado.");
 			view.setBtnDesconecta(false);
+		}
+	}
+	
+	/**
+	 * Carrega uma imagem a ser salva na DHT.
+	 * <br> Ação disparada ao pressionar 
+	 * 		o botão "Arquivo > Carregar Imagem..." 
+	 */
+	class CarregaImgListener implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			JFileChooser fileChooser = new JFileChooser();
+			fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			int status = fileChooser.showOpenDialog(view.getContentPane());
+			if(status == JFileChooser.APPROVE_OPTION) {
+				File file = fileChooser.getSelectedFile();
+				BufferedImage bufferImg = null;
+				try {
+					bufferImg = ImageIO.read(file);
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(view.getContentPane(), 
+							"Erro ao carregar imagem.", // mensagem
+							"Imagem não foi carregada", // titulo da janela
+							JOptionPane.ERROR_MESSAGE);
+					e1.printStackTrace();
+				}
+				
+				picture.setImg(bufferImg);
+				picture.setName(file.getName());
+				picture.setDate(new Date().toString());
+				
+				view.setImg(new ImageIcon(picture.getImg()));
+				view.setBtnSalvar(true);
+				
+			}
 		}
 	}
 	

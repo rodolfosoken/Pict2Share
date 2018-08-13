@@ -18,6 +18,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.JScrollPane;
 
 /**
  * Classe que representa a GUI de um álbum.
@@ -40,6 +41,7 @@ public class ViewAlbum extends JFrame {
 	private JButton btnDesconectar;
 	private JLabel lblStatusDht;
 	private JLabel lblImage;
+	private JMenuItem mntmCarregarImagem;
 
 	/**
 	 * Launch the application.
@@ -71,7 +73,7 @@ public class ViewAlbum extends JFrame {
 		JMenu mnArquivo = new JMenu("Arquivo");
 		menuBar.add(mnArquivo);
 		
-		JMenuItem mntmCarregarImagem = new JMenuItem("Carregar Imagem...");
+		mntmCarregarImagem = new JMenuItem("Carregar Imagem...");
 		mnArquivo.add(mntmCarregarImagem);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -84,7 +86,7 @@ public class ViewAlbum extends JFrame {
 		contentPane.add(panelPicture);
 		panelPicture.setLayout(null);
 		
-		lblImage = new JLabel("Image");
+		lblImage = new JLabel("");
 		lblImage.setHorizontalAlignment(SwingConstants.CENTER);
 		lblImage.setBounds(10, 11, 737, 374);
 		panelPicture.add(lblImage);
@@ -186,12 +188,26 @@ public class ViewAlbum extends JFrame {
 		btnSalvar.addActionListener(action);
 	}
 	
+	public void addCarregarImgListener(ActionListener action) {
+		mntmCarregarImagem.addActionListener(action);
+	}
+	
 	/**
 	 * Define a imagem que aparecerá no quadro de visualização.
+	 * <br> Altera a escala da imagem para caber no quadro
 	 * @param icon
 	 */
 	public void setImg(ImageIcon icon) {
-		lblImage.setIcon(icon);
+		ImageIcon resized = new ImageIcon(icon.getImage().getScaledInstance(lblImage.getWidth(), lblImage.getHeight(), 0));
+		lblImage.setIcon(resized);
+	}
+	
+	/**
+	 * Define o status do botão Salvar.
+	 * @param b boolean
+	 */
+	public void setBtnSalvar(boolean b) {
+		btnSalvar.setEnabled(b);
 	}
 	
 	/**

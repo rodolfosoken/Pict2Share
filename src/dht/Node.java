@@ -6,21 +6,17 @@ public class Node {
 	private String prev;
 	private String next;
 	private String data;
-	
-	
-	
-	
-	
+
+	public Node(String id) {
+		this.id = id;
+	}
+
 	public Node(String id, String data) {
-		super();
 		this.id = id;
 		this.data = data;
 	}
 
-
-
 	public Node(String id, String prev, String next, String data) {
-		super();
 		this.id = id;
 		this.prev = prev;
 		this.next = next;

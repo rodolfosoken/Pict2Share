@@ -1,12 +1,17 @@
 package model;
 
 import java.awt.Image;
+import java.io.Serializable;
 
 /**
  * Classe modelo de uma imagem.
  */
-public class Picture {
+public class Picture implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String name;
 	private String id;
 	private String date;

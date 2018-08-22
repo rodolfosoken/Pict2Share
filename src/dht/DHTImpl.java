@@ -15,9 +15,14 @@ public class DHTImpl implements DHT{
 	 */
 //private List<Node> nodes;
 	
+	private Node node;
+	
+	public DHTImpl(Node node) {
+		this.node = node;
+	}
+	
 	@Override
-	public Node join(String path) throws IOException {
-		Node node = new Node("hash1");
+	public Node join(String path) throws IOException {		
 		try(BufferedReader br = new BufferedReader(new FileReader(path))) {
 		    String line = br.readLine();
 

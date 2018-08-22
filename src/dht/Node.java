@@ -1,22 +1,58 @@
 package dht;
 
+/***
+ * Classe que representa um nó na rede.
+ * <p> A cada novo cliente é criado um novo nó. 
+ */
 public class Node {
 	
+	/** O id do nó. */
 	private String id;
+	
+	/** O nó anterior. */
 	private String prev;
+	
+	/** O próximo nó */
 	private String next;
-	private String data;
+	
+	/** O dado armazenado no nó */
+	private byte[] data;
+	
+	/** A dht */
+	//implementação da dht
+	private DHT dht;
+	
 
+	/**
+	 * Instantiates a new node.
+	 *
+	 * @param id the id
+	 */
 	public Node(String id) {
 		this.id = id;
+		this.dht = new DHTImpl(this);
 	}
 
-	public Node(String id, String data) {
+	/**
+	 * Instantiates a new node.
+	 *
+	 * @param id the id
+	 * @param data the data
+	 */
+	public Node(String id, byte[] data) {
 		this.id = id;
 		this.data = data;
 	}
 
-	public Node(String id, String prev, String next, String data) {
+	/**
+	 * Instantiates a new node.
+	 *
+	 * @param id the id
+	 * @param prev the prev
+	 * @param next the next
+	 * @param data the data
+	 */
+	public Node(String id, String prev, String next, byte[] data) {
 		this.id = id;
 		this.prev = prev;
 		this.next = next;
@@ -26,6 +62,8 @@ public class Node {
 
 
 	/**
+	 * Gets the id.
+	 *
 	 * @return the id
 	 */
 	public String getId() {
@@ -35,6 +73,8 @@ public class Node {
 
 
 	/**
+	 * Sets the id.
+	 *
 	 * @param id the id to set
 	 */
 	public void setId(String id) {
@@ -44,6 +84,8 @@ public class Node {
 
 
 	/**
+	 * Gets the prev.
+	 *
 	 * @return the prev
 	 */
 	public String getPrev() {
@@ -53,6 +95,8 @@ public class Node {
 
 
 	/**
+	 * Sets the prev.
+	 *
 	 * @param prev the prev to set
 	 */
 	public void setPrev(String prev) {
@@ -62,6 +106,8 @@ public class Node {
 
 
 	/**
+	 * Gets the next.
+	 *
 	 * @return the next
 	 */
 	public String getNext() {
@@ -71,37 +117,56 @@ public class Node {
 
 
 	/**
+	 * Sets the next.
+	 *
 	 * @param next the next to set
 	 */
 	public void setNext(String next) {
 		this.next = next;
 	}
 
-
-
 	/**
-	 * @return the Data
+	 * Gets the data.
+	 *
+	 * @return the data
 	 */
-	public String getData() {
+	public byte[] getData() {
 		return data;
 	}
 
-
-
 	/**
-	 * @param data the data to set
+	 * Sets the data.
+	 *
+	 * @param data the new data
 	 */
-	public void setData(String data) {
+	public void setData(byte[] data) {
 		this.data = data;
 	}
 
+	/**
+	 * Gets the dht.
+	 *
+	 * @return the dht
+	 */
+	public DHT getDht() {
+		return dht;
+	}
 
+	/**
+	 * Sets the dht.
+	 *
+	 * @param dht the new dht
+	 */
+	public void setDht(DHT dht) {
+		this.dht = dht;
+	}
 
 	@Override
 	public String toString() {
 		return "Nó: "+id;
 	}
 	
+
 	@Override
 	public boolean equals(Object other){
 		// se ambos possuem o mesmo endereço, então são iguais
@@ -115,6 +180,7 @@ public class Node {
 				this.getData().equals(otherObj.getData());
 	}
 	
+
 	@Override
 	public int hashCode() {
 		return id.hashCode();

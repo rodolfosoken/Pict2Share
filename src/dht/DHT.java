@@ -76,4 +76,16 @@ public interface DHT extends Remote{
 	 * @return the isConnected
 	 */
 	public boolean isConnected() throws RemoteException;
+	/**
+	 * @return the isInserted (Join_ok)
+	 */
+	public boolean isInserted() throws RemoteException;
+	/**
+	 * @param isStoped the isStoped to set
+	 */
+	public void setStoped(boolean isStoped)throws RemoteException ;
+	/**
+	 * @return the isStoped
+	 */
+	public boolean isStoped()throws RemoteException;
 }

@@ -51,17 +51,20 @@ public class ControllerAlbum {
 			try {
 
 				// atualiza o status da dht enquanto tenta-se conectar
+				node.getDht().setStoped(false);
 				new Thread(() -> {
 					int count = 0;
-					while (count < 30) {
+					while (count < 120) {
 						try {
-							view.setStatus(node.getDht().getStatus());
-							if (node.getDht().isConnected())
+							if ((node.getDht().isConnected() && 
+									node.getDht().isInserted() ) || node.getDht().isStoped())
 								break;
+							view.setStatus(node.getDht().getStatus());
 							count++;
 							Thread.sleep(1000);
 						} catch (InterruptedException e1) {
 						} catch (RemoteException e1) {
+							break;
 						}
 					}
 				}).start();
@@ -75,23 +78,43 @@ public class ControllerAlbum {
 						"Erro ao iniciar conexão: " + e1.getMessage() + "\n Tente (re)iniciar o rmiregistry ", // mensagem
 						"Error: join DHT", // titulo da janela
 						JOptionPane.ERROR_MESSAGE);
+				try {
+					view.setStatus("Erro: não foi possível conectar.");
+					node.getDht().setStoped(true);
+				} catch (RemoteException e2) {
+				}
 				e1.printStackTrace();
 			} catch (AlreadyBoundException e1) {
 				JOptionPane.showMessageDialog(view.getContentPane(),
 						"Erro ao conectar à rede DHT: Nó já está registrado.\n" + e1.getMessage(), // mensagem
 						"Error: join DHT", // titulo da janela
 						JOptionPane.ERROR_MESSAGE);
+				try {
+					view.setStatus("Erro: não foi possível conectar.");
+					node.getDht().setStoped(true);
+				} catch (RemoteException e2) {
+				}
 				e1.printStackTrace();
 			} catch (ExportException e1) {
 				JOptionPane.showMessageDialog(view.getContentPane(), "Objeto já está registrado: " + e1.getMessage(), // mensagem
 						"Error: join DHT", // titulo da janela
 						JOptionPane.ERROR_MESSAGE);
+				try {
+					view.setStatus("Erro: não foi possível conectar.");
+					node.getDht().setStoped(true);
+				} catch (RemoteException e2) {
+				}
 				e1.printStackTrace();
 			} catch (IOException e1) {
 				JOptionPane.showMessageDialog(view.getContentPane(),
 						"Erro ao ler o arquivo inicial: " + e1.getMessage(), // mensagem
 						"Error: join DHT", // titulo da janela
 						JOptionPane.ERROR_MESSAGE);
+				try {
+					view.setStatus("Erro: não foi possível conectar.");
+					node.getDht().setStoped(true);
+				} catch (RemoteException e2) {
+				}
 				e1.printStackTrace();
 			}
 
@@ -107,6 +130,7 @@ public class ControllerAlbum {
 		public void actionPerformed(ActionEvent e) {
 			try {
 				node.getDht().leave();
+				node.getDht().setStoped(true);
 				view.setStatus("Desconectado.");
 				view.setBtnDesconecta(false);
 				view.setBtnConectar(true);

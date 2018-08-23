@@ -26,16 +26,22 @@ public class DHTImpl implements DHT{
 	private Registry registry;
 	private String status;
 	private boolean isConnected;
+	private boolean isInserted;
+	private boolean isStoped;
 	
 	public DHTImpl(Node node) {
 		this.node = node;
 		status = "iniciada";
 		isConnected = false;
+		isInserted = false;
+		isStoped = false;
 	}
 	
 	@Override
 	public String join(String path) throws IOException, ConnectException, AlreadyBoundException {		
 		isConnected = false;
+		isInserted = false;
+		isStoped = false;
 		String firstLineFile[] = null;
 		try(BufferedReader br = new BufferedReader(new FileReader(path))) {
 		    String line = br.readLine();
@@ -53,7 +59,7 @@ public class DHTImpl implements DHT{
 			        //tenta se conectar ao serviço de nomes do nó inicial
 			        //caso o nó não seja encontrado será lançada uma exceção
 			        try {
-			        	status = "IP:"+ipPortName[0]+" Verificando...";
+			        	status = "IP:"+ipPortName[0]+" Conectando...";
 			        	System.out.println(status);
 			        	registry = LocateRegistry.getRegistry(ipPortName[0], Integer.parseInt(ipPortName[1]));
 			        	DHT dhtStub = (DHT) registry.lookup(ipPortName[2]);
@@ -63,10 +69,11 @@ public class DHTImpl implements DHT{
 		        		msgJoin.setSource(this.toString());
 		        		status = "Conectado a: "+ipPortName[0]+ " | Enviando mensagem join...";
 		        		System.out.println(status);
-		        		dhtStub.procMessage(msgJoin);
 		        		node.setIp(ipPortName[0]);
 		        		node.setPort(ipPortName[1]);
 		        		node.setId(ipPortName[2]);
+		        		isInserted = false;
+		        		dhtStub.procMessage(msgJoin);
 		        		isConnected = true;
 		        		break;
 			        }catch(NotBoundException | RemoteException e){
@@ -88,6 +95,8 @@ public class DHTImpl implements DHT{
 		    	status = "Nova DHT Iniciada: Conectado! | "+node.getIp();
 		    	System.out.println(status);
 		    	isConnected = true;
+		    	isInserted = true;
+		    	isStoped = false;
 		    }
 
 		    
@@ -102,6 +111,8 @@ public class DHTImpl implements DHT{
 			registry = LocateRegistry.getRegistry();
 			UnicastRemoteObject.unexportObject(this, true);
 			registry.unbind(node.getId());
+			isConnected = false;
+			isStoped = true;
 		} catch (RemoteException e) {
 		} catch (NotBoundException e) {
 		}
@@ -127,6 +138,7 @@ public class DHTImpl implements DHT{
 			break;
 		case JOIN_OK:
 			System.out.println("join_ok");
+			
 			break;
 		case NEW_NODE:
 			System.out.println("new_node");
@@ -195,6 +207,27 @@ public class DHTImpl implements DHT{
 	 */
 	public boolean isConnected() {
 		return isConnected;
+	}
+
+	/**
+	 * @return the isInserted
+	 */
+	public boolean isInserted() {
+		return isInserted;
+	}
+
+	/**
+	 * @return the isStoped
+	 */
+	public boolean isStoped() {
+		return isStoped;
+	}
+
+	/**
+	 * @param isStoped the isStoped to set
+	 */
+	public void setStoped(boolean isStoped) {
+		this.isStoped = isStoped;
 	}
 
 	

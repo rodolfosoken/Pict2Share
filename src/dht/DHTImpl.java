@@ -47,33 +47,18 @@ public class DHTImpl implements DHT{
 		        if(firstLineFile == null && ipPortName != null)
 		        	firstLineFile = ipPortName;
 		        //tenta se conectar ao serviço de nomes do nó inicial
+		        //caso o nó não seja encontrado será lançada uma exceção
 		        try {
 		        	registry = LocateRegistry.getRegistry(ipPortName[0], Integer.parseInt(ipPortName[1]));
-		        }catch(RemoteException e){
-		        	registry = null;
+		        	DHT dhtStub = (DHT) registry.lookup(ipPortName[2]);
+	        		System.out.println("Nó : "+dhtStub.getIdNode()+" ATIVO");
+	        		Message msgJoin = new Message(TypeMessage.JOIN);
+	        		msgJoin.setSource(this.toString());
+	        		dhtStub.procMessage(msgJoin);
+	        		isConnected = true;
+	        		break;
+		        }catch(NotBoundException | RemoteException e){
 		        }
-		        
-		        //se o registro de nomes está disponível, 
-		        //então procurar o nó pelo nome
-		        if (registry!=null) {
-		        	DHT dhtStub = null;
-		        	
-		        	//tenta se conectar ao nó inicial procurando pelo nome
-		        	try {
-		        		dhtStub = (DHT) registry.lookup(ipPortName[2]);
-		        	}catch(NotBoundException | RemoteException e){
-		        		dhtStub = null;
-		        	}
-		        	//se o nó inicial foi achado então a conexão foi iniciada
-		        	if(dhtStub !=null) {
-		        		System.out.println("Nó : "+dhtStub.getIdNode()+" ATIVO");
-	    			    Message msgJoin = new Message(TypeMessage.JOIN);
-	    			    msgJoin.setSource(this.toString());
-	    			    dhtStub.procMessage(msgJoin);
-	    			    isConnected = true;
-	    			    break;
-		        	}
-		        }	        
 		    }
 		    
 		    //Não conseguiu conectar com nenhum nó no arquivo txt

@@ -5,7 +5,6 @@ import java.rmi.AlreadyBoundException;
 import java.rmi.ConnectException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.rmi.server.ExportException;
 
 /**
  * Interface para a DHT
@@ -24,7 +23,7 @@ public interface DHT extends Remote{
 	 * @throws IOException
 	 * @throws AlreadyBoundException 
 	 */
-	public Node join(String path) throws IOException, RemoteException, ConnectException, AlreadyBoundException;
+	public String join(String path) throws IOException, RemoteException, ConnectException, AlreadyBoundException;
 	
 	/**
 	 * Operação que realiza a desconexão da rede.
@@ -61,4 +60,20 @@ public interface DHT extends Remote{
 	 * @return retorna o id do nó da dht
 	 */
 	public String getIdNode()throws RemoteException;
+	
+	/***
+	 * @return retorna o nó da dht
+	 */
+	public Node getNode()throws RemoteException;
+	
+	/**
+	 * 
+	 * @return o status da dht
+	 * @throws RemoteException
+	 */
+	public String getStatus() throws RemoteException;
+	/**
+	 * @return the isConnected
+	 */
+	public boolean isConnected() throws RemoteException;
 }

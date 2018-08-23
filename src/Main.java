@@ -10,7 +10,7 @@ public class Main {
 		
 		Node node = new Node("hash1");
 		ViewAlbum view = new ViewAlbum();
-		ControllerAlbum controllerAlbum = new ControllerAlbum(view, node);
+		new ControllerAlbum(view, node);
 		
 		view.setVisible(true);
 	}

@@ -14,14 +14,7 @@ class TestDHT {
 
 	@Test
 	void testJoin() throws AlreadyBoundException, NotBoundException {
-		Node node = new Node("hash");
-			
-		try {
-			node.getDht().join("./initxt.txt");
-		} catch (IOException e) {
-			e.printStackTrace();
-			fail();
-		}
+
 	}
 
 }

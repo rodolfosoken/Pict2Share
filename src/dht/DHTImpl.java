@@ -24,41 +24,56 @@ public class DHTImpl implements DHT{
 	
 	private Node node;
 	private Registry registry;
+	private String status;
+	private boolean isConnected;
 	
 	public DHTImpl(Node node) {
 		this.node = node;
+		status = "iniciada";
+		isConnected = false;
 	}
 	
 	@Override
-	public Node join(String path) throws IOException, ConnectException, AlreadyBoundException {		
-		boolean isConnected = false;
+	public String join(String path) throws IOException, ConnectException, AlreadyBoundException {		
+		isConnected = false;
 		String firstLineFile[] = null;
 		try(BufferedReader br = new BufferedReader(new FileReader(path))) {
 		    String line = br.readLine();
 		    String ipPortName[] = null;
 		    while (line != null) {
 		    	ipPortName = line.split(":");
-		    	if(ipPortName.length>1)
+		    	if(ipPortName.length>=3) {
 //		    		System.out.println("IP: " + ipPortName[0] + " Porta: "+ipPortName[1]+" Nome: "+ipPortName[2]);
-		        line = br.readLine();
-		    	
-		    	//armazena a primeira linha do arquivo
-		    	//caso seja necessário iniciar uma nova dht
-		        if(firstLineFile == null && ipPortName != null)
-		        	firstLineFile = ipPortName;
-		        //tenta se conectar ao serviço de nomes do nó inicial
-		        //caso o nó não seja encontrado será lançada uma exceção
-		        try {
-		        	registry = LocateRegistry.getRegistry(ipPortName[0], Integer.parseInt(ipPortName[1]));
-		        	DHT dhtStub = (DHT) registry.lookup(ipPortName[2]);
-	        		System.out.println("Nó : "+dhtStub.getIdNode()+" ATIVO");
-	        		Message msgJoin = new Message(TypeMessage.JOIN);
-	        		msgJoin.setSource(this.toString());
-	        		dhtStub.procMessage(msgJoin);
-	        		isConnected = true;
-	        		break;
-		        }catch(NotBoundException | RemoteException e){
-		        }
+			        line = br.readLine();
+			    	
+			    	//armazena a primeira linha do arquivo
+			    	//caso seja necessário iniciar uma nova dht
+			        if(firstLineFile == null && ipPortName != null)
+			        	firstLineFile = ipPortName;
+			        //tenta se conectar ao serviço de nomes do nó inicial
+			        //caso o nó não seja encontrado será lançada uma exceção
+			        try {
+			        	status = "IP:"+ipPortName[0]+" Verificando...";
+			        	System.out.println(status);
+			        	registry = LocateRegistry.getRegistry(ipPortName[0], Integer.parseInt(ipPortName[1]));
+			        	DHT dhtStub = (DHT) registry.lookup(ipPortName[2]);
+			        	status = "No : "+dhtStub.getIdNode()+" ATIVO | "+ipPortName[0]+":"+ipPortName[2];
+		        		System.out.println(status);
+		        		Message msgJoin = new Message(TypeMessage.JOIN);
+		        		msgJoin.setSource(this.toString());
+		        		status = "Conectado a: "+ipPortName[0]+ " | Enviando mensagem join...";
+		        		System.out.println(status);
+		        		dhtStub.procMessage(msgJoin);
+		        		node.setIp(ipPortName[0]);
+		        		node.setPort(ipPortName[1]);
+		        		node.setId(ipPortName[2]);
+		        		isConnected = true;
+		        		break;
+			        }catch(NotBoundException | RemoteException e){
+			        }
+		    	}else {
+		    		new IOException();
+		    	}
 		    }
 		    
 		    //Não conseguiu conectar com nenhum nó no arquivo txt
@@ -70,12 +85,14 @@ public class DHTImpl implements DHT{
 		    	node.setId(firstLineFile[2]);
 		    	DHT stub = (DHT) UnicastRemoteObject.exportObject(this, 0);
 		    	registry.bind(node.getId(), stub);
-		    	System.out.println("Nova DHT Inciada: Conectado!");
+		    	status = "Nova DHT Iniciada: Conectado! | "+node.getIp();
+		    	System.out.println(status);
+		    	isConnected = true;
 		    }
 
 		    
 		}
-		return node;
+		return node.getIp()+":"+node.getPort();
 	}
 	
 	@Override
@@ -152,4 +169,34 @@ public class DHTImpl implements DHT{
 		return node.getId();
 	}
 
+	/**
+	 * @return the node
+	 */
+	public Node getNode() {
+		return node;
+	}
+
+	/**
+	 * @return the status
+	 */
+	public String getStatus() {
+		return status;
+	}
+
+	/**
+	 * @param status the status to set
+	 */
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	/**
+	 * @return the isConnected
+	 */
+	public boolean isConnected() {
+		return isConnected;
+	}
+
+	
+	
 }

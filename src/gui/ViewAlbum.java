@@ -7,9 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
-
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -22,7 +19,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JScrollPane;
 
 /**
  * Classe que representa a GUI de um álbum.
@@ -50,6 +46,7 @@ public class ViewAlbum extends JFrame {
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				try {
 					ViewAlbum frame = new ViewAlbum();
@@ -130,22 +127,23 @@ public class ViewAlbum extends JFrame {
 		
 		btnBuscar = new JButton("Buscar");
 		btnBuscar.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
 			}
 		});
 		btnBuscar.setBounds(864, 14, 98, 23);
 		contentPane.add(btnBuscar);
 		
-		JLabel lblDht = new JLabel("DHT :");
+		JLabel lblDht = new JLabel("Status da DHT :");
 		lblDht.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblDht.setBounds(34, 40, 80, 33);
+		lblDht.setBounds(10, 42, 127, 33);
 		contentPane.add(lblDht);
 		
 		lblStatusDht = new JLabel("Desconectado");
 		lblStatusDht.setBackground(Color.WHITE);
-		lblStatusDht.setHorizontalAlignment(SwingConstants.CENTER);
+		lblStatusDht.setHorizontalAlignment(SwingConstants.LEFT);
 		lblStatusDht.setFont(new Font("Tahoma", Font.BOLD, 14));
-		lblStatusDht.setBounds(147, 40, 162, 30);
+		lblStatusDht.setBounds(147, 40, 416, 30);
 		contentPane.add(lblStatusDht);
 		
 		btnConectar = new JButton("Conectar");
@@ -155,7 +153,7 @@ public class ViewAlbum extends JFrame {
 		
 		btnDesconectar = new JButton("Desconectar");
 		btnDesconectar.setEnabled(false);
-		btnDesconectar.setBounds(312, 47, 117, 23);
+		btnDesconectar.setBounds(446, 13, 117, 23);
 		contentPane.add(btnDesconectar);
 		
 		JLabel lblVisualizaoDaImagem = new JLabel("Visualização da Imagem:");
@@ -236,6 +234,8 @@ public class ViewAlbum extends JFrame {
 	 */
 	public void setStatus(String status) {
 		lblStatusDht.setText(status);
+		lblStatusDht.setOpaque(true);
+		lblStatusDht.paint(lblStatusDht.getGraphics());
 	}
 	/**
 	 * Define o id do nó atual 

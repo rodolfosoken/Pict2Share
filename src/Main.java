@@ -1,6 +1,5 @@
 import controller.ControllerAlbum;
-import dht.DHT;
-import dht.DHTImpl;
+import dht.Node;
 import gui.ViewAlbum;
 
 /**
@@ -8,9 +7,10 @@ import gui.ViewAlbum;
  */
 public class Main {
 	public static void main(String[] args) {
-		DHT dht = new DHTImpl();
+		
+		Node node = new Node("hash1");
 		ViewAlbum view = new ViewAlbum();
-		ControllerAlbum controllerAlbum = new ControllerAlbum(view, dht);
+		ControllerAlbum controllerAlbum = new ControllerAlbum(view, node);
 		
 		view.setVisible(true);
 	}

@@ -1,11 +1,15 @@
 package dht;
 
 import java.io.IOException;
+import java.rmi.AlreadyBoundException;
+import java.rmi.NotBoundException;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 /**
  * Interface para a DHT
  */
-public interface DHT {
+public interface DHT extends Remote{
 	
 	/**
 	 * Operação utilizada para se conectar à DHT.
@@ -17,8 +21,9 @@ public interface DHT {
 	 * @param path caminho para o arquivo texto contendo os IP's iniciais.
 	 * @return node se a operação foi realizada com sucesso.
 	 * @throws IOException
+	 * @throws AlreadyBoundException 
 	 */
-	public Node join(String path) throws IOException;
+	public Node join(String path) throws IOException, RemoteException, AlreadyBoundException,NotBoundException;
 	
 	/**
 	 * Operação que realiza a desconexão da rede.
@@ -26,7 +31,7 @@ public interface DHT {
 	 * <br>mantendo a consistência do anel da DHT.
 	 * <p> O conteúdo será transferido para o nó sucessor.
 	 */
-	public void leave() ;
+	public void leave() throws RemoteException;
 	
 	/**
 	 * Armazena um dado na DHT utilizando a chave.
@@ -44,4 +49,10 @@ public interface DHT {
 	 * @see #store(String, String)
 	 */
 	public void retrieve(String key) ;
+	
+	/**
+	 * Processar a mensagem recebida;
+	 * @param msg mensagem
+	 * */
+	public void procMessage(Message msg);
 }

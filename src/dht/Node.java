@@ -6,6 +6,11 @@ package dht;
  */
 public class Node {
 	
+	/**
+	 * Nome do nó inicial que consta no arquivo txt
+	 */
+	public final String initName = "hash1";
+	
 	/** O id do nó. */
 	private String id;
 	
@@ -17,6 +22,12 @@ public class Node {
 	
 	/** O dado armazenado no nó */
 	private byte[] data;
+	
+	/**Ip do no***/
+	private String ip;
+	
+	/**Porta**/
+	private String port;
 	
 	/** A dht */
 	//implementação da dht
@@ -161,11 +172,38 @@ public class Node {
 		this.dht = dht;
 	}
 
-	@Override
-	public String toString() {
-		return "Nó: "+id;
+	/**
+	 * @return the ip
+	 */
+	public String getIp() {
+		return ip;
+	}
+
+	/**
+	 * @param ip the ip to set
+	 */
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
+
+	/**
+	 * @return the port
+	 */
+	public String getPort() {
+		return port;
+	}
+
+	/**
+	 * @param port the port to set
+	 */
+	public void setPort(String port) {
+		this.port = port;
 	}
 	
+	@Override
+	public String toString() {
+		return id+";"+ip+";"+port;
+	}
 
 	@Override
 	public boolean equals(Object other){

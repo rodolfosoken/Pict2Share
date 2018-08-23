@@ -1,11 +1,13 @@
 package controller;
 
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.rmi.AlreadyBoundException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.Date;
 
 import javax.imageio.ImageIO;
@@ -13,7 +15,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import dht.DHT;
 import dht.Node;
 import gui.ViewAlbum;
 import model.Picture;
@@ -25,12 +26,11 @@ public class ControllerAlbum {
 	
 	private ViewAlbum view;
 	private Picture picture;
-	private DHT dht;
-	private Node currentNode;
+	private Node node;
 	
-	public ControllerAlbum(ViewAlbum view, DHT dht) {
+	public ControllerAlbum(ViewAlbum view, Node node) {
 		this.view = view;
-		this.dht = dht;
+		this.node = node;
 		this.picture = new Picture();
 		
 		//Adiciona os listeners da view
@@ -48,8 +48,20 @@ public class ControllerAlbum {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-				currentNode = dht.join(view.getPath());
+				node.getDht().join(view.getPath());
 			} catch (IOException e1) {
+				JOptionPane.showMessageDialog(view.getContentPane(), 
+						"Erro ao conectar à rede DHT ", // mensagem
+						"Error: join DHT", // titulo da janela
+						JOptionPane.ERROR_MESSAGE);
+				e1.printStackTrace();
+			} catch (AlreadyBoundException e1) {
+				JOptionPane.showMessageDialog(view.getContentPane(), 
+					"Erro ao conectar à rede DHT: Nó já está registrado.", // mensagem
+					"Error: join DHT", // titulo da janela
+					JOptionPane.ERROR_MESSAGE);
+				e1.printStackTrace();
+			} catch (NotBoundException e1) {
 				JOptionPane.showMessageDialog(view.getContentPane(), 
 						"Erro ao conectar à rede DHT ", // mensagem
 						"Error: join DHT", // titulo da janela
@@ -57,7 +69,7 @@ public class ControllerAlbum {
 				e1.printStackTrace();
 			}
 			view.setStatus("Conectado!");
-			view.setIdNode(currentNode.getId());
+			view.setIdNode(node.getId());
 			view.setBtnDesconecta(true);
 		}
 		
@@ -69,7 +81,15 @@ public class ControllerAlbum {
 	class DesconectaListener implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			dht.leave();
+			try {
+				node.getDht().leave();
+			} catch (RemoteException e1) {
+				JOptionPane.showMessageDialog(view.getContentPane(), 
+						"Erro ao desconectar à rede DHT ", // mensagem
+						"Error: leave DHT", // titulo da janela
+						JOptionPane.ERROR_MESSAGE);
+				e1.printStackTrace();
+			}
 			view.setStatus("Desconectado.");
 			view.setBtnDesconecta(false);
 		}

@@ -33,9 +33,7 @@ public class ViewAlbum extends JFrame {
 	private JTextField textFieldPath;
 	private JTextField textFieldIdNode;
 	private JTextField textFieldImageName;
-	private JButton button;
 	private JButton btnConectar;
-	private JButton btnAnterior;
 	private JButton btnBuscar;
 	private JButton btnSalvar;
 	private JButton btnDesconectar;
@@ -160,16 +158,6 @@ public class ViewAlbum extends JFrame {
 		lblVisualizaoDaImagem.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		lblVisualizaoDaImagem.setBounds(137, 90, 200, 29);
 		contentPane.add(lblVisualizaoDaImagem);
-		
-		btnAnterior = new JButton("Anterior");
-		btnAnterior.setEnabled(false);
-		btnAnterior.setBounds(10, 285, 89, 23);
-		contentPane.add(btnAnterior);
-		
-		button = new JButton("Proxima");
-		button.setEnabled(false);
-		button.setBounds(930, 285, 89, 23);
-		contentPane.add(button);
 	}
 	
 	public void addConectaListener(ActionListener action) {

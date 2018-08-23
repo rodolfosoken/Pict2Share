@@ -6,11 +6,6 @@ package dht;
  */
 public class Node {
 	
-	/**
-	 * Nome do nó inicial que consta no arquivo txt
-	 */
-	public final String initName = "hash1";
-	
 	/** O id do nó. */
 	private String id;
 	
@@ -202,7 +197,7 @@ public class Node {
 	
 	@Override
 	public String toString() {
-		return id+";"+ip+";"+port;
+		return this.id+";"+this.ip+";"+this.port;
 	}
 
 	@Override

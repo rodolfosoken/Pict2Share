@@ -2,9 +2,10 @@ package dht;
 
 import java.io.IOException;
 import java.rmi.AlreadyBoundException;
-import java.rmi.NotBoundException;
+import java.rmi.ConnectException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.server.ExportException;
 
 /**
  * Interface para a DHT
@@ -23,7 +24,7 @@ public interface DHT extends Remote{
 	 * @throws IOException
 	 * @throws AlreadyBoundException 
 	 */
-	public Node join(String path) throws IOException, RemoteException, AlreadyBoundException,NotBoundException;
+	public Node join(String path) throws IOException, RemoteException, ConnectException, AlreadyBoundException;
 	
 	/**
 	 * Operação que realiza a desconexão da rede.
@@ -40,7 +41,7 @@ public interface DHT extends Remote{
 	 * @param data
 	 * @return
 	 */
-	public boolean store(String key, String data) ;
+	public boolean store(String key, String data)throws RemoteException ;
 	
 	/**
 	 * Realiza a busca na DHT e devolve (caso presente na DHT) 
@@ -48,11 +49,16 @@ public interface DHT extends Remote{
 	 * @param key
 	 * @see #store(String, String)
 	 */
-	public void retrieve(String key) ;
+	public void retrieve(String key) throws RemoteException;
 	
 	/**
 	 * Processar a mensagem recebida;
 	 * @param msg mensagem
 	 * */
-	public void procMessage(Message msg);
+	public void procMessage(Message msg)throws RemoteException;
+	
+	/***
+	 * @return retorna o id do nó da dht
+	 */
+	public String getIdNode()throws RemoteException;
 }

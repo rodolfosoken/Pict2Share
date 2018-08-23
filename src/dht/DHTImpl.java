@@ -4,10 +4,13 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.rmi.AlreadyBoundException;
+import java.rmi.ConnectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.ExportException;
+import java.rmi.server.UnicastRemoteObject;
 
 /**
  * Classe que implementa os métodos da DHT.
@@ -28,36 +31,62 @@ public class DHTImpl implements DHT{
 	}
 	
 	@Override
-	public Node join(String path) throws IOException, AlreadyBoundException, NotBoundException {		
+	public Node join(String path) throws IOException, ConnectException, AlreadyBoundException {		
 		boolean isConnected = false;
+		String firstLineFile[] = null;
 		try(BufferedReader br = new BufferedReader(new FileReader(path))) {
 		    String line = br.readLine();
 		    String ipPortName[] = null;
 		    while (line != null) {
 		    	ipPortName = line.split(":");
 		    	if(ipPortName.length>1)
-		    		System.out.println("IP: " + ipPortName[0] + " Porta: "+ipPortName[1]);
+//		    		System.out.println("IP: " + ipPortName[0] + " Porta: "+ipPortName[1]+" Nome: "+ipPortName[2]);
 		        line = br.readLine();
-		        
+		    	
+		    	//armazena a primeira linha do arquivo
+		    	//caso seja necessário iniciar uma nova dht
+		        if(firstLineFile == null && ipPortName != null)
+		        	firstLineFile = ipPortName;
+		        //tenta se conectar ao serviço de nomes do nó inicial
 		        try {
 		        registry = LocateRegistry.getRegistry(ipPortName[0], Integer.parseInt(ipPortName[1]));
 		        }catch(RemoteException e){
 		        	registry = null;
 		        }
+		        
+		        //se o registro de nomes está disponível, 
+		        //então procurar o nó pelo nome
 		        if (registry!=null) {
-		        	DHT dhtStub = (DHT) registry.lookup(ipPortName[2]);
-    			    Message msgJoin = new Message(TypeMessage.JOIN);
-    			    msgJoin.setSource(this.toString());
-    			    dhtStub.procMessage(msgJoin);
-    			    isConnected = true;
-		        	break;
+		        	DHT dhtStub = null;
+		        	
+		        	//tenta se conectar ao nó inicial procurando pelo nome
+		        	try {
+		        		dhtStub = (DHT) registry.lookup(ipPortName[2]);
+		        	}catch(NotBoundException e){
+		        		dhtStub = null;
+		        	}
+		        	//se o nó inicial foi achado então a conexão foi iniciada
+		        	if(dhtStub !=null) {
+		        		System.out.println("Nó : "+dhtStub.getIdNode()+" ATIVO");
+	    			    Message msgJoin = new Message(TypeMessage.JOIN);
+	    			    msgJoin.setSource(this.toString());
+	    			    dhtStub.procMessage(msgJoin);
+	    			    isConnected = true;
+	    			    break;
+		        	}
 		        }	        
 		    }
 		    
 		    //Não conseguiu conectar com nenhum nó no arquivo txt
 		    //irá criar o nó inicial
 		    if(isConnected == false) {
-		    	registry.bind(node.initName, this);
+		    	registry = LocateRegistry.getRegistry();
+		    	node.setIp(firstLineFile[0]);
+		    	node.setPort(firstLineFile[1]);
+		    	node.setId(firstLineFile[2]);
+		    	DHT stub = (DHT) UnicastRemoteObject.exportObject(this, 0);
+		    	registry.bind(node.getId(), stub);
+		    	System.out.println("Nova DHT Inciada: Conectado!");
 		    }
 
 		    
@@ -66,7 +95,16 @@ public class DHTImpl implements DHT{
 	}
 	
 	@Override
-	public void leave() {	
+	public void leave() {
+		//se este for o nó inicial será preciso desregistrar o nome no RMI
+		try {
+			registry = LocateRegistry.getRegistry();
+			UnicastRemoteObject.unexportObject(this, true);
+			registry.unbind(node.getId());
+		} catch (RemoteException e) {
+		} catch (NotBoundException e) {
+		}
+    	
 	}
 	
 	@Override
@@ -82,6 +120,11 @@ public class DHTImpl implements DHT{
 	@Override
 	public void procMessage(Message msg) {
 		
+	}
+	
+	@Override
+	public String getIdNode() throws RemoteException {
+		return node.getId();
 	}
 
 }

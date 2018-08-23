@@ -5,6 +5,10 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -158,6 +162,18 @@ public class ViewAlbum extends JFrame {
 		lblVisualizaoDaImagem.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		lblVisualizaoDaImagem.setBounds(137, 90, 200, 29);
 		contentPane.add(lblVisualizaoDaImagem);
+		
+		
+		addWindowListener(new WindowAdapter()
+        {
+            @Override
+            public void windowClosing(WindowEvent e)
+            {
+            	if(!btnConectar.isEnabled())
+            		btnDesconectar.doClick();
+                e.getWindow().dispose();
+            }
+        });
 	}
 	
 	public void addConectaListener(ActionListener action) {
@@ -196,6 +212,14 @@ public class ViewAlbum extends JFrame {
 	 */
 	public void setBtnSalvar(boolean b) {
 		btnSalvar.setEnabled(b);
+	}
+	
+	/**
+	 * Define o status do botão Conectar.
+	 * @param b boolean
+	 */
+	public void setBtnConectar(boolean b) {
+		btnConectar.setEnabled(b);
 	}
 	
 	/**

@@ -6,8 +6,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.rmi.AlreadyBoundException;
-import java.rmi.NotBoundException;
+import java.rmi.ConnectException;
 import java.rmi.RemoteException;
+import java.rmi.server.ExportException;
 import java.util.Date;
 
 import javax.imageio.ImageIO;
@@ -49,28 +50,38 @@ public class ControllerAlbum {
 		public void actionPerformed(ActionEvent e) {
 			try {
 				node.getDht().join(view.getPath());
-			} catch (IOException e1) {
+				view.setStatus("Conectado!");
+				view.setIdNode(node.getId());
+				view.setBtnDesconecta(true);
+				view.setBtnConectar(false);
+			}catch(ConnectException e1) {
 				JOptionPane.showMessageDialog(view.getContentPane(), 
-						"Erro ao conectar à rede DHT ", // mensagem
+						"Erro ao iniciar conexão: "+e1.getMessage()
+						+ "\n Tente reiniciar o rmiregistry "
+						+ "(há instâncias antigas no registro).", // mensagem
 						"Error: join DHT", // titulo da janela
 						JOptionPane.ERROR_MESSAGE);
 				e1.printStackTrace();
 			} catch (AlreadyBoundException e1) {
 				JOptionPane.showMessageDialog(view.getContentPane(), 
-					"Erro ao conectar à rede DHT: Nó já está registrado.", // mensagem
+					"Erro ao conectar à rede DHT: Nó já está registrado.\n"+e1.getMessage(), // mensagem
 					"Error: join DHT", // titulo da janela
 					JOptionPane.ERROR_MESSAGE);
 				e1.printStackTrace();
-			} catch (NotBoundException e1) {
+			}catch(ExportException e1) {
 				JOptionPane.showMessageDialog(view.getContentPane(), 
-						"Erro ao conectar à rede DHT ", // mensagem
+						"Objeto já está registrado: "+e1.getMessage(), // mensagem
+						"Error: join DHT", // titulo da janela
+						JOptionPane.ERROR_MESSAGE);
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				JOptionPane.showMessageDialog(view.getContentPane(), 
+						"Erro ao ler o arquivo inicial: "+e1.getMessage(), // mensagem
 						"Error: join DHT", // titulo da janela
 						JOptionPane.ERROR_MESSAGE);
 				e1.printStackTrace();
 			}
-			view.setStatus("Conectado!");
-			view.setIdNode(node.getId());
-			view.setBtnDesconecta(true);
+
 		}
 		
 	}
@@ -83,6 +94,9 @@ public class ControllerAlbum {
 		public void actionPerformed(ActionEvent e) {
 			try {
 				node.getDht().leave();
+				view.setStatus("Desconectado.");
+				view.setBtnDesconecta(false);
+				view.setBtnConectar(true);
 			} catch (RemoteException e1) {
 				JOptionPane.showMessageDialog(view.getContentPane(), 
 						"Erro ao desconectar à rede DHT ", // mensagem
@@ -90,8 +104,6 @@ public class ControllerAlbum {
 						JOptionPane.ERROR_MESSAGE);
 				e1.printStackTrace();
 			}
-			view.setStatus("Desconectado.");
-			view.setBtnDesconecta(false);
 		}
 	}
 	

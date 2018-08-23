@@ -1,5 +1,9 @@
 package dht;
 
+import java.util.HashMap;
+import java.util.Map;
+
+// TODO: Auto-generated Javadoc
 /***
  * Classe que representa um nó na rede.
  * <p> A cada novo cliente é criado um novo nó. 
@@ -12,19 +16,19 @@ public class Node {
 	/** O nó anterior. */
 	private String prev;
 	
-	/** O próximo nó */
+	/**  O próximo nó. */
 	private String next;
 	
-	/** O dado armazenado no nó */
-	private byte[] data;
+	/**  O dado armazenado no nó. */
+	private Map<String,byte[]> data;
 	
-	/**Ip do no***/
+	/** Ip do no**. */
 	private String ip;
 	
-	/**Porta**/
+	/** Porta*. */
 	private String port;
 	
-	/** A dht */
+	/**  A dht. */
 	//implementação da dht
 	private DHT dht;
 	
@@ -37,36 +41,11 @@ public class Node {
 	public Node(String id) {
 		this.id = id;
 		this.dht = new DHTImpl(this);
-	}
-
-	/**
-	 * Instantiates a new node.
-	 *
-	 * @param id the id
-	 * @param data the data
-	 */
-	public Node(String id, byte[] data) {
-		this.id = id;
-		this.data = data;
-	}
-
-	/**
-	 * Instantiates a new node.
-	 *
-	 * @param id the id
-	 * @param prev the prev
-	 * @param next the next
-	 * @param data the data
-	 */
-	public Node(String id, String prev, String next, byte[] data) {
-		this.id = id;
-		this.prev = prev;
-		this.next = next;
-		this.data = data;
+		data = new HashMap<>();
 	}
 
 
-
+	
 	/**
 	 * Gets the id.
 	 *
@@ -81,7 +60,7 @@ public class Node {
 	/**
 	 * Sets the id.
 	 *
-	 * @param id the id to set
+	 * @param id the new id
 	 */
 	public void setId(String id) {
 		this.id = id;
@@ -103,7 +82,7 @@ public class Node {
 	/**
 	 * Sets the prev.
 	 *
-	 * @param prev the prev to set
+	 * @param prev the new prev
 	 */
 	public void setPrev(String prev) {
 		this.prev = prev;
@@ -125,29 +104,79 @@ public class Node {
 	/**
 	 * Sets the next.
 	 *
-	 * @param next the next to set
+	 * @param next the new next
 	 */
 	public void setNext(String next) {
 		this.next = next;
 	}
+
+
 
 	/**
 	 * Gets the data.
 	 *
 	 * @return the data
 	 */
-	public byte[] getData() {
+	public Map<String, byte[]> getData() {
 		return data;
 	}
+
+
 
 	/**
 	 * Sets the data.
 	 *
-	 * @param data the new data
+	 * @param data the data
 	 */
-	public void setData(byte[] data) {
+	public void setData(Map<String, byte[]> data) {
 		this.data = data;
 	}
+
+
+
+	/**
+	 * Gets the ip.
+	 *
+	 * @return the ip
+	 */
+	public String getIp() {
+		return ip;
+	}
+
+
+
+	/**
+	 * Sets the ip.
+	 *
+	 * @param ip the new ip
+	 */
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
+
+
+
+	/**
+	 * Gets the port.
+	 *
+	 * @return the port
+	 */
+	public String getPort() {
+		return port;
+	}
+
+
+
+	/**
+	 * Sets the port.
+	 *
+	 * @param port the new port
+	 */
+	public void setPort(String port) {
+		this.port = port;
+	}
+
+
 
 	/**
 	 * Gets the dht.
@@ -158,6 +187,8 @@ public class Node {
 		return dht;
 	}
 
+
+
 	/**
 	 * Sets the dht.
 	 *
@@ -167,34 +198,9 @@ public class Node {
 		this.dht = dht;
 	}
 
-	/**
-	 * @return the ip
-	 */
-	public String getIp() {
-		return ip;
-	}
 
-	/**
-	 * @param ip the ip to set
-	 */
-	public void setIp(String ip) {
-		this.ip = ip;
-	}
 
-	/**
-	 * @return the port
-	 */
-	public String getPort() {
-		return port;
-	}
 
-	/**
-	 * @param port the port to set
-	 */
-	public void setPort(String port) {
-		this.port = port;
-	}
-	
 	@Override
 	public String toString() {
 		return this.id+";"+this.ip+";"+this.port;
@@ -213,6 +219,7 @@ public class Node {
 				this.getData().equals(otherObj.getData());
 	}
 	
+
 
 	@Override
 	public int hashCode() {

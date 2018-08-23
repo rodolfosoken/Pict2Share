@@ -92,8 +92,9 @@ public class DHTImpl implements DHT{
 	}
 	
 	@Override
-	public boolean store(String key, String data) {
-		return false;
+	public boolean store(String key, byte[] data) {
+		node.getData().put(key, data);
+		return true;
 	}
 	
 	@Override
@@ -103,6 +104,46 @@ public class DHTImpl implements DHT{
 
 	@Override
 	public void procMessage(Message msg) {
+		switch (msg.getType()) {
+		case JOIN:
+			System.out.println("join");
+			break;
+		case JOIN_OK:
+			System.out.println("join_ok");
+			break;
+		case NEW_NODE:
+			System.out.println("new_node");
+			break;
+		case STORE:
+			System.out.println("store");
+			String args[] = msg.getArgs().split(" ");
+			for (int i = 0; i < Integer.parseInt(args[1]); i++) {
+				
+			}
+			
+			break;
+		case LEAVE:
+			System.out.println("leave");
+			break;
+		case RETRIEVE:
+			System.out.println("retrieve");
+			break;
+		case NODE_GONE:
+			System.out.println("node_gone");
+			break;
+		case OK:
+			System.out.println("ok");
+			break;
+		case NOT_FOUND:
+			System.out.println("not_found");
+			break;
+		case TRANSFER:
+			System.out.println("transfer");
+			break;
+
+		default:
+			break;
+		}
 		
 	}
 	

@@ -41,7 +41,7 @@ public interface DHT extends Remote{
 	 * @param data
 	 * @return
 	 */
-	public boolean store(String key, String data)throws RemoteException ;
+	public boolean store(String key, byte[] data)throws RemoteException ;
 	
 	/**
 	 * Realiza a busca na DHT e devolve (caso presente na DHT) 

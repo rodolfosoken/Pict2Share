@@ -57,8 +57,7 @@ public class ControllerAlbum {
 			}catch(ConnectException e1) {
 				JOptionPane.showMessageDialog(view.getContentPane(), 
 						"Erro ao iniciar conexão: "+e1.getMessage()
-						+ "\n Tente reiniciar o rmiregistry "
-						+ "(há instâncias antigas no registro).", // mensagem
+						+ "\n Tente (re)iniciar o rmiregistry ", // mensagem
 						"Error: join DHT", // titulo da janela
 						JOptionPane.ERROR_MESSAGE);
 				e1.printStackTrace();

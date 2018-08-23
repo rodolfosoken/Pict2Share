@@ -9,7 +9,6 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.ExportException;
 import java.rmi.server.UnicastRemoteObject;
 
 /**
@@ -49,7 +48,7 @@ public class DHTImpl implements DHT{
 		        	firstLineFile = ipPortName;
 		        //tenta se conectar ao serviço de nomes do nó inicial
 		        try {
-		        registry = LocateRegistry.getRegistry(ipPortName[0], Integer.parseInt(ipPortName[1]));
+		        	registry = LocateRegistry.getRegistry(ipPortName[0], Integer.parseInt(ipPortName[1]));
 		        }catch(RemoteException e){
 		        	registry = null;
 		        }
@@ -62,7 +61,7 @@ public class DHTImpl implements DHT{
 		        	//tenta se conectar ao nó inicial procurando pelo nome
 		        	try {
 		        		dhtStub = (DHT) registry.lookup(ipPortName[2]);
-		        	}catch(NotBoundException e){
+		        	}catch(NotBoundException | RemoteException e){
 		        		dhtStub = null;
 		        	}
 		        	//se o nó inicial foi achado então a conexão foi iniciada

@@ -30,6 +30,7 @@ public class ControllerMain {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			hashId=view.getTxtHash().getText();
 			Node node = new Node(hashId);
 			node.setPort(view.getTxtPorta().getText());
 			node.setIp("127.0.0.1");

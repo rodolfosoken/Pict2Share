@@ -71,7 +71,6 @@ public class ViewMain extends JFrame {
 		contentPane.add(lblPorta);
 		
 		txtHash = new JTextField();
-		txtHash.setEditable(false);
 		txtHash.setText("Hash");
 		txtHash.setBounds(111, 8, 86, 20);
 		contentPane.add(txtHash);

@@ -65,7 +65,7 @@ public interface DHT extends Remote{
 	/***
 	 * @return retorna o nó da dht
 	 */
-	public Node getNode()throws RemoteException;
+	public String getNode()throws RemoteException;
 	
 	/**
 	 * 
@@ -89,6 +89,17 @@ public interface DHT extends Remote{
 	 * @return the isStoped
 	 */
 	public boolean isStoped()throws RemoteException;
-	
+	/**
+	 * 
+	 * @return a dht anterior 
+	 * @throws RemoteException
+	 */
+	public DHT getPrev()throws RemoteException;
+	/**
+	 * 
+	 * @return a próxima dht
+	 * @throws RemoteException
+	 */
+	public DHT getNext()throws RemoteException;
 
 }

@@ -63,16 +63,16 @@ public class DHTImpl implements DHT {
 						status = "No : " + dhtStub.getIdNode() + " ATIVO | " + ipPortName[0] + ":" + ipPortName[1];
 						System.out.println(status);
 						isConnected = true;
-						
-						//Adiciona os atributos no nó 
+
+						// Adiciona os atributos no nó
 						// e realiza um registro temporário do nó
-						//que será utilizado para receber a resposta join_ok
-						node.setId(""+count);
-						node.setPort((Integer.parseInt(ipPortName[1])+count)+"");
+						// que será utilizado para receber a resposta join_ok
+						node.setId("" + count);
+						node.setPort((Integer.parseInt(ipPortName[1]) + count) + "");
 						DHT stub = (DHT) UnicastRemoteObject.exportObject(this, Integer.parseInt(node.getPort()));
 						registry.bind(node.getId(), stub);
-						
-						//cria e envia a mensagem de join
+
+						// cria e envia a mensagem de join
 						status = "Conectado a: " + ipPortName[0] + " | Enviando mensagem join...";
 						isInserted = false;
 						System.out.println(status);
@@ -80,10 +80,12 @@ public class DHTImpl implements DHT {
 						msgJoin.setSource(node.toString());
 						dhtStub.procMessage(msgJoin);
 						break;
-					} catch (NotBoundException | RemoteException e) {
+					} catch (RemoteException e) {
 						status = e.getLocalizedMessage();
-						System.out.println(node.getId()+": "+ e.getLocalizedMessage());
+						System.out.println(node.getId() + ": " + e.getLocalizedMessage());
 						e.printStackTrace();
+					} catch (NotBoundException e) {
+
 					}
 				} else {
 					new IOException();
@@ -143,32 +145,32 @@ public class DHTImpl implements DHT {
 			int src = Integer.parseInt(msg.getSource().split(";")[2]);
 			int idPrev = -1;
 			if (node.getPrev() != null)
-				idPrev = Integer.parseInt(node.getPrev().getId());
+				idPrev = Integer.parseInt(node.getPrev().getIdNode());
 
 			if (src > idPrev) { // se id >= dest então tratar a requisição
 				Message resp = new Message(TypeMessage.JOIN_OK);
 				resp.setSource(node.toString());
-				if(node.getPrev() != null)
+				if (node.getPrev() != null)
 					resp.setArgs(node.getPrev().toString());
 				registry = LocateRegistry.getRegistry(Integer.parseInt(node.getPort()));
 				DHT nodeSrc = (DHT) registry.lookup(String.valueOf(src));
-//				node.setPrev(nodeSrc.getNode());
+				node.setPrev(nodeSrc);
 				nodeSrc.procMessage(resp);
 			} else {
-				// se o src (nó ingressante) é menor que este id 
-				// então passar para o anterior 
-				this.node.getPrev().getDht().procMessage(msg);
+				// se o src (nó ingressante) é menor que este id
+				// então passar para o anterior
+				this.node.getPrev().procMessage(msg);
 				System.out.println(node.getId() + " : JOIN repassado.");
 			}
 			break;
 		case JOIN_OK:
-			System.out.println(node.getId()+": JOIN_OK");
+			System.out.println(node.getId() + ": JOIN_OK");
 			status = "Conectado, nó inserido na DHT.";
 			isConnected = true;
 			isInserted = true;
 			UnicastRemoteObject.unexportObject(this, false);
 			registry.unbind(node.getId());
-			
+
 			break;
 		case NEW_NODE:
 			System.out.println("new_node");
@@ -261,8 +263,5 @@ public class DHTImpl implements DHT {
 	public void setStoped(boolean isStoped) {
 		this.isStoped = isStoped;
 	}
-
-	
-	
 
 }

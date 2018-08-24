@@ -31,7 +31,7 @@ public class DHTImpl implements DHT{
 	
 	public DHTImpl(Node node) {
 		this.node = node;
-		status = "iniciada";
+		status = "Inicializando DHT...";
 		isConnected = false;
 		isInserted = false;
 		isStoped = false;
@@ -42,7 +42,6 @@ public class DHTImpl implements DHT{
 		isConnected = false;
 		isInserted = false;
 		isStoped = false;
-		String firstLineFile[] = null;
 		try(BufferedReader br = new BufferedReader(new FileReader(path))) {
 		    String line = br.readLine();
 		    String ipPortName[] = null;
@@ -51,12 +50,7 @@ public class DHTImpl implements DHT{
 		    	if(ipPortName.length>=3) {
 //		    		System.out.println("IP: " + ipPortName[0] + " Porta: "+ipPortName[1]+" Nome: "+ipPortName[2]);
 			        line = br.readLine();
-			    	
-			    	//armazena a primeira linha do arquivo
-			    	//caso seja necessário iniciar uma nova dht
-			        if(firstLineFile == null && ipPortName != null)
-			        	firstLineFile = ipPortName;
-			        //tenta se conectar ao serviço de nomes do nó inicial
+			    	//tenta se conectar ao serviço de nomes do nó inicial
 			        //caso o nó não seja encontrado será lançada uma exceção
 			        try {
 			        	status = "IP:"+ipPortName[0]+" Conectando...";
@@ -77,6 +71,8 @@ public class DHTImpl implements DHT{
 		        		isConnected = true;
 		        		break;
 			        }catch(NotBoundException | RemoteException e){
+			        	status = e.getLocalizedMessage();
+			        	System.out.println(e.getMessage());
 			        }
 		    	}else {
 		    		new IOException();
@@ -87,9 +83,8 @@ public class DHTImpl implements DHT{
 		    //irá criar o nó inicial
 		    if(isConnected == false) {
 		    	registry = LocateRegistry.getRegistry();
-		    	node.setIp(firstLineFile[0]);
-		    	node.setPort(firstLineFile[1]);
-		    	node.setId(firstLineFile[2]);
+		    	node.setIp("127.0.0.1");
+		    	node.setPort("1099");
 		    	DHT stub = (DHT) UnicastRemoteObject.exportObject(this, 0);
 		    	registry.bind(node.getId(), stub);
 		    	status = "Nova DHT Iniciada: Conectado! | "+node.getIp();
@@ -134,6 +129,7 @@ public class DHTImpl implements DHT{
 	public void procMessage(Message msg) {
 		switch (msg.getType()) {
 		case JOIN:
+			
 			System.out.println("join");
 			break;
 		case JOIN_OK:

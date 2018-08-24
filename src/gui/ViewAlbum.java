@@ -7,6 +7,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.EventListener;
+
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -19,6 +23,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.JList;
 
 /**
  * Classe que representa a GUI de um álbum.
@@ -40,6 +45,8 @@ public class ViewAlbum extends JFrame {
 	private JLabel lblStatusDht;
 	private JLabel lblImage;
 	private JMenuItem mntmCarregarImagem;
+	private JList list;
+	private JLabel lblImagensArmazenadosNeste;
 
 	/**
 	 * Launch the application.
@@ -81,7 +88,7 @@ public class ViewAlbum extends JFrame {
 		
 		JPanel panelPicture = new JPanel();
 		panelPicture.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		panelPicture.setBounds(137, 119, 757, 396);
+		panelPicture.setBounds(34, 119, 757, 396);
 		contentPane.add(panelPicture);
 		panelPicture.setLayout(null);
 		
@@ -92,7 +99,7 @@ public class ViewAlbum extends JFrame {
 		
 		btnSalvar = new JButton("Salvar");
 		btnSalvar.setEnabled(false);
-		btnSalvar.setBounds(474, 526, 89, 23);
+		btnSalvar.setBounds(363, 526, 89, 23);
 		contentPane.add(btnSalvar);
 		
 		textFieldPath = new JTextField();
@@ -105,7 +112,7 @@ public class ViewAlbum extends JFrame {
 		lblArquivoInicial.setBounds(34, 17, 89, 14);
 		contentPane.add(lblArquivoInicial);
 		
-		JLabel lblIdDoN = new JLabel("Hash do Nó:");
+		JLabel lblIdDoN = new JLabel("Atributos do Nó:");
 		lblIdDoN.setBounds(586, 48, 89, 14);
 		contentPane.add(lblIdDoN);
 		
@@ -142,7 +149,7 @@ public class ViewAlbum extends JFrame {
 		lblStatusDht = new JLabel("Desconectado");
 		lblStatusDht.setBackground(Color.WHITE);
 		lblStatusDht.setHorizontalAlignment(SwingConstants.LEFT);
-		lblStatusDht.setFont(new Font("Tahoma", Font.BOLD, 14));
+		lblStatusDht.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblStatusDht.setBounds(147, 40, 416, 30);
 		contentPane.add(lblStatusDht);
 		
@@ -160,6 +167,16 @@ public class ViewAlbum extends JFrame {
 		lblVisualizaoDaImagem.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		lblVisualizaoDaImagem.setBounds(137, 90, 200, 29);
 		contentPane.add(lblVisualizaoDaImagem);
+		
+		list = new JList();
+		list.setBounds(801, 119, 218, 396);
+		contentPane.add(list);
+		
+		lblImagensArmazenadosNeste = new JLabel("Imagens Armazenados neste nó:");
+		lblImagensArmazenadosNeste.setHorizontalAlignment(SwingConstants.CENTER);
+		lblImagensArmazenadosNeste.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblImagensArmazenadosNeste.setBounds(810, 90, 209, 23);
+		contentPane.add(lblImagensArmazenadosNeste);
 		
 		
 		addWindowListener(new WindowAdapter()
@@ -193,6 +210,7 @@ public class ViewAlbum extends JFrame {
 	public void addCarregarImgListener(ActionListener action) {
 		mntmCarregarImagem.addActionListener(action);
 	}
+	
 	
 	/**
 	 * Define a imagem que aparecerá no quadro de visualização.
@@ -234,8 +252,6 @@ public class ViewAlbum extends JFrame {
 	 */
 	public void setStatus(String status) {
 		lblStatusDht.setText(status);
-		lblStatusDht.setOpaque(true);
-		lblStatusDht.paint(lblStatusDht.getGraphics());
 	}
 	/**
 	 * Define o id do nó atual 

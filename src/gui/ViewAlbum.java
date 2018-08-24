@@ -115,7 +115,6 @@ public class ViewAlbum extends JFrame {
 		contentPane.add(lblIdDoN);
 		
 		textFieldIdNode = new JTextField();
-		textFieldIdNode.setEnabled(false);
 		textFieldIdNode.setEditable(false);
 		textFieldIdNode.setBounds(744, 45, 167, 20);
 		contentPane.add(textFieldIdNode);

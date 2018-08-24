@@ -92,8 +92,6 @@ public class DHTImpl implements DHT {
 			// irá criar o nó inicial
 			if (isConnected == false) {
 				registry = LocateRegistry.getRegistry();
-				node.setIp("127.0.0.1");
-				node.setPort("1099");
 				DHT stub = (DHT) UnicastRemoteObject.exportObject(this, 0);
 				registry.bind(node.getId(), stub);
 				status = "Nova DHT Iniciada: Conectado! | " + node.getIp();

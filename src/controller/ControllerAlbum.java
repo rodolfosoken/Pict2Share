@@ -36,6 +36,7 @@ public class ControllerAlbum {
 		this.view = view;
 		this.node = node;
 		this.picture = new Picture();
+		view.setIdNode(node.toString());
 
 		// Adiciona os listeners da view
 		view.addConectaListener(new ConectaListener());

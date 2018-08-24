@@ -14,10 +14,10 @@ public class Node {
 	private String id;
 	
 	/** O nó anterior. */
-	private String prev;
+	private Node prev;
 	
 	/**  O próximo nó. */
-	private String next;
+	private Node next;
 	
 	/**  O dado armazenado no nó. */
 	private Map<String,byte[]> data;
@@ -73,7 +73,7 @@ public class Node {
 	 *
 	 * @return the prev
 	 */
-	public String getPrev() {
+	public Node getPrev() {
 		return prev;
 	}
 
@@ -84,7 +84,7 @@ public class Node {
 	 *
 	 * @param prev the new prev
 	 */
-	public void setPrev(String prev) {
+	public void setPrev(Node prev) {
 		this.prev = prev;
 	}
 
@@ -95,7 +95,7 @@ public class Node {
 	 *
 	 * @return the next
 	 */
-	public String getNext() {
+	public Node getNext() {
 		return next;
 	}
 
@@ -106,7 +106,7 @@ public class Node {
 	 *
 	 * @param next the new next
 	 */
-	public void setNext(String next) {
+	public void setNext(Node next) {
 		this.next = next;
 	}
 
@@ -203,7 +203,7 @@ public class Node {
 
 	@Override
 	public String toString() {
-		return this.id+";"+this.ip+";"+this.port;
+		return this.ip+";"+this.port+";"+this.id;
 	}
 
 	@Override

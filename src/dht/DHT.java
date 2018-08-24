@@ -3,6 +3,7 @@ package dht;
 import java.io.IOException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.ConnectException;
+import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -54,7 +55,7 @@ public interface DHT extends Remote{
 	 * Processar a mensagem recebida;
 	 * @param msg mensagem
 	 * */
-	public void procMessage(Message msg)throws RemoteException;
+	public void procMessage(Message msg)throws RemoteException,NotBoundException;
 	
 	/***
 	 * @return retorna o id do nó da dht
@@ -88,4 +89,6 @@ public interface DHT extends Remote{
 	 * @return the isStoped
 	 */
 	public boolean isStoped()throws RemoteException;
+	
+
 }

@@ -70,7 +70,7 @@ public class ViewAlbum extends JFrame {
 	 */
 	public ViewAlbum() {
 		setTitle("Álbum de Fotos");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 1045, 621);
 		
 		JMenuBar menuBar = new JMenuBar();
@@ -142,7 +142,7 @@ public class ViewAlbum extends JFrame {
 		contentPane.add(btnBuscar);
 		
 		JLabel lblDht = new JLabel("Status da DHT :");
-		lblDht.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblDht.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblDht.setBounds(10, 42, 127, 33);
 		contentPane.add(lblDht);
 		
@@ -150,7 +150,7 @@ public class ViewAlbum extends JFrame {
 		lblStatusDht.setBackground(Color.WHITE);
 		lblStatusDht.setHorizontalAlignment(SwingConstants.LEFT);
 		lblStatusDht.setFont(new Font("Tahoma", Font.BOLD, 12));
-		lblStatusDht.setBounds(147, 40, 416, 30);
+		lblStatusDht.setBounds(147, 47, 416, 23);
 		contentPane.add(lblStatusDht);
 		
 		btnConectar = new JButton("Conectar");

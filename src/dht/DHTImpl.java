@@ -58,7 +58,8 @@ public class DHTImpl implements DHT {
 						System.out.println(status);
 						registry = LocateRegistry.getRegistry(ipPortName[0], Integer.parseInt(ipPortName[1]));
 						DHT dhtStub = (DHT) registry.lookup(ipPortName[2]);
-						status = "No : " + dhtStub.getIdNode() + " ATIVO | " + ipPortName[0] + ":" + ipPortName[1];
+						status = node.getId() + " : " + dhtStub.getIdNode() + " ATIVO | " + ipPortName[0] + ":"
+								+ ipPortName[1];
 						System.out.println(status);
 						isConnected = true;
 
@@ -142,17 +143,17 @@ public class DHTImpl implements DHT {
 				nextNode = Integer.parseInt(getNext().getIdNode());
 			if (getPrev() != null)
 				idPrev = Integer.parseInt(getPrev().getIdNode());
-			if (idPrev < src || (thisNode < idPrev) ) { // se o anterior for maior que este nó,
-													 // então este é o sucessor do último, 
-													 // e deve-se proceder com a inserção
-				if (src <= thisNode|| getNext()==null || (thisNode < idPrev && src > idPrev)) {
+			if (idPrev < src || (thisNode < idPrev)) { // se o anterior for maior que este nó,
+														// então este é o sucessor do último,
+														// e deve-se proceder com a inserção
+				if (src <= thisNode || getNext() == null || (thisNode < idPrev && src > idPrev)) {
+					System.out.println(node.getId() + " : JOIN Adicionando: " + msg.getSource().split(";")[2]);
 					Message resp = new Message(TypeMessage.JOIN_OK);
 					resp.setSource(node.toString());
 					if (node.getPrev() != null) {
 						String ref = getPrev().getNode();
 						resp.setArgs(ref);
 					}
-					registry = LocateRegistry.getRegistry(Integer.parseInt(node.getPort()));
 					DHT nodeSrc = (DHT) registry.lookup(String.valueOf(src));
 					node.setPrev(nodeSrc);
 					if (node.getNext() == null)
@@ -164,8 +165,8 @@ public class DHTImpl implements DHT {
 					System.out.println(node.getId() + " : JOIN repassado ao próximo.");
 					this.node.getNext().procMessage(msg);
 				}
-				
-			}else {
+
+			} else {
 				// se o src (nó ingressante) é menor que o antecessor
 				// deste nó, então passar ao anterior
 				System.out.println(node.getId() + " : JOIN repassado ao anterior.");
@@ -176,9 +177,9 @@ public class DHTImpl implements DHT {
 			System.out.println(node.getId() + ": JOIN_OK recebido.");
 			DHT nodeSrc1 = (DHT) registry.lookup(msg.getSource().split(";")[2]);
 			node.setNext(nodeSrc1);
-			if(msg.getArgs() != null) {
-				DHT nodePrev1 = (DHT)registry.lookup(msg.getArgs().split(";")[2]);
-				if (nodePrev1 != null ) {
+			if (msg.getArgs() != null) {
+				DHT nodePrev1 = (DHT) registry.lookup(msg.getArgs().split(";")[2]);
+				if (nodePrev1 != null) {
 					node.setPrev(nodePrev1);
 					Message respNewNode = new Message(TypeMessage.NEW_NODE);
 					respNewNode.setSource(node.toString());
@@ -194,7 +195,7 @@ public class DHTImpl implements DHT {
 		case NEW_NODE:
 			System.out.println(node.getId() + ": NEW_NODE recebida.");
 			node.setNext(getNext().getPrev());
-			System.out.println(node.getId() + ": next : "+node.getNext().getIdNode());
+			System.out.println(node.getId() + ": next : " + node.getNext().getIdNode());
 			break;
 		case STORE:
 			System.out.println("store");

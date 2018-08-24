@@ -52,7 +52,7 @@ public interface DHT extends Remote{
 	public void retrieve(String key) throws RemoteException;
 	
 	/**
-	 * Processar a mensagem recebida;
+	 * Processa a mensagem recebida;
 	 * @param msg mensagem
 	 * */
 	public void procMessage(Message msg)throws RemoteException,NotBoundException;

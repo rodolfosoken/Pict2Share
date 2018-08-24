@@ -20,7 +20,7 @@ public class Node {
 	private DHT next;
 	
 	/**  O dado armazenado no nó. */
-	private Map<String,byte[]> data;
+	private Map<String,Object> data;
 	
 	/** Ip do no**. */
 	private String ip;
@@ -117,7 +117,7 @@ public class Node {
 	 *
 	 * @return the data
 	 */
-	public Map<String, byte[]> getData() {
+	public Map<String, Object> getData() {
 		return data;
 	}
 
@@ -128,7 +128,7 @@ public class Node {
 	 *
 	 * @param data the data
 	 */
-	public void setData(Map<String, byte[]> data) {
+	public void setData(Map<String, Object> data) {
 		this.data = data;
 	}
 

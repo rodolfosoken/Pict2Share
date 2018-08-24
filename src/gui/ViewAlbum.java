@@ -7,14 +7,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.EventListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -23,7 +22,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JList;
 
 /**
  * Classe que representa a GUI de um álbum.
@@ -112,23 +110,23 @@ public class ViewAlbum extends JFrame {
 		lblArquivoInicial.setBounds(34, 17, 89, 14);
 		contentPane.add(lblArquivoInicial);
 		
-		JLabel lblIdDoN = new JLabel("Atributos do Nó:");
-		lblIdDoN.setBounds(586, 48, 89, 14);
+		JLabel lblIdDoN = new JLabel("Nó (IP; Porta; Hash):");
+		lblIdDoN.setBounds(586, 48, 148, 14);
 		contentPane.add(lblIdDoN);
 		
 		textFieldIdNode = new JTextField();
 		textFieldIdNode.setEnabled(false);
 		textFieldIdNode.setEditable(false);
-		textFieldIdNode.setBounds(699, 45, 263, 20);
+		textFieldIdNode.setBounds(744, 45, 167, 20);
 		contentPane.add(textFieldIdNode);
 		textFieldIdNode.setColumns(10);
 		
 		JLabel lblNomeDaImagem = new JLabel("Nome da Imagem :");
-		lblNomeDaImagem.setBounds(586, 18, 117, 14);
+		lblNomeDaImagem.setBounds(586, 18, 148, 14);
 		contentPane.add(lblNomeDaImagem);
 		
 		textFieldImageName = new JTextField();
-		textFieldImageName.setBounds(699, 15, 162, 20);
+		textFieldImageName.setBounds(744, 15, 167, 20);
 		contentPane.add(textFieldImageName);
 		textFieldImageName.setColumns(10);
 		
@@ -138,7 +136,7 @@ public class ViewAlbum extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 			}
 		});
-		btnBuscar.setBounds(864, 14, 98, 23);
+		btnBuscar.setBounds(921, 13, 98, 23);
 		contentPane.add(btnBuscar);
 		
 		JLabel lblDht = new JLabel("Status da DHT :");
@@ -172,7 +170,7 @@ public class ViewAlbum extends JFrame {
 		list.setBounds(801, 119, 218, 396);
 		contentPane.add(list);
 		
-		lblImagensArmazenadosNeste = new JLabel("Imagens Armazenados neste nó:");
+		lblImagensArmazenadosNeste = new JLabel("Dados armazenados neste nó:");
 		lblImagensArmazenadosNeste.setHorizontalAlignment(SwingConstants.CENTER);
 		lblImagensArmazenadosNeste.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblImagensArmazenadosNeste.setBounds(810, 90, 209, 23);
@@ -211,6 +209,9 @@ public class ViewAlbum extends JFrame {
 		mntmCarregarImagem.addActionListener(action);
 	}
 	
+	public void addChangeListener(PropertyChangeListener listener) {
+		lblStatusDht.addPropertyChangeListener(listener);
+	}
 	
 	/**
 	 * Define a imagem que aparecerá no quadro de visualização.

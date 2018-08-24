@@ -1,22 +1,29 @@
 package gui;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
 import java.awt.Font;
-import javax.swing.JButton;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
 
 public class ViewMain extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JButton btnNovoAlbum;
+	private JLabel lblHashGerado;
+	private JLabel lblPorta;
+	private JTextField txtHash;
+	private JTextField txtPorta;
 
 	/**
 	 * Launch the application.
@@ -43,20 +50,59 @@ public class ViewMain extends JFrame {
 		setBounds(100, 100, 368, 234);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
 		
 		btnNovoAlbum = new JButton("+ Novo Album");
+		btnNovoAlbum.setBounds(5, 76, 342, 114);
 		btnNovoAlbum.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
+		contentPane.setLayout(null);
 		btnNovoAlbum.setFont(new Font("Tahoma", Font.BOLD, 31));
-		contentPane.add(btnNovoAlbum, BorderLayout.CENTER);
+		contentPane.add(btnNovoAlbum);
+		
+		lblHashGerado = new JLabel("Hash Gerado");
+		lblHashGerado.setBounds(5, 11, 94, 14);
+		contentPane.add(lblHashGerado);
+		
+		lblPorta = new JLabel("Porta:");
+		lblPorta.setBounds(5, 36, 46, 14);
+		contentPane.add(lblPorta);
+		
+		txtHash = new JTextField();
+		txtHash.setEditable(false);
+		txtHash.setText("Hash");
+		txtHash.setBounds(111, 8, 86, 20);
+		contentPane.add(txtHash);
+		txtHash.setColumns(10);
+		
+		txtPorta = new JTextField();
+		txtPorta.setText("1099");
+		txtPorta.setBounds(111, 33, 86, 20);
+		contentPane.add(txtPorta);
+		txtPorta.setColumns(10);
 	}
 	
 	public void addBtnListener(ActionListener a) {
 		btnNovoAlbum.addActionListener(a);
 	}
 
+	public JTextField getTxtPorta() {
+		return txtPorta;
+	}
+
+	public void setTxtPorta(JTextField txtPorta) {
+		this.txtPorta = txtPorta;
+	}
+
+	public JTextField getTxtHash() {
+		return txtHash;
+	}
+
+	public void setTxtHash(JTextField txtHash) {
+		this.txtHash = txtHash;
+	}
+	
+	
 }

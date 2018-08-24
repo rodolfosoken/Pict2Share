@@ -3,6 +3,8 @@ package controller;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.rmi.AlreadyBoundException;
@@ -14,6 +16,7 @@ import java.util.Date;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import dht.Node;
@@ -38,7 +41,16 @@ public class ControllerAlbum {
 		view.addConectaListener(new ConectaListener());
 		view.addDesconectaListener(new DesconectaListener());
 		view.addCarregarImgListener(new CarregaImgListener());
-
+		view.addChangeListener(new UpdateListener());		
+	}
+	
+	
+	class UpdateListener implements PropertyChangeListener {
+		@Override
+		public void propertyChange(PropertyChangeEvent evt) {
+			if(evt.getPropertyName() == "status")
+				view.setStatus(evt.getNewValue().toString());
+		}	
 	}
 
 	/**
@@ -87,6 +99,7 @@ public class ControllerAlbum {
 				try {
 					view.setBtnConectar(false);
 					node.getDht().join(view.getPath());
+					new JLabel().addPropertyChangeListener(new UpdateListener());
 					view.setStatus(node.getDht().getStatus());
 					view.setIdNode(node.toString());
 					view.setBtnDesconecta(true);

@@ -11,6 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import javax.swing.JCheckBox;
 
 public class ViewMain extends JFrame {
 
@@ -24,6 +25,7 @@ public class ViewMain extends JFrame {
 	private JLabel lblPorta;
 	private JTextField txtHash;
 	private JTextField txtPorta;
+	private JCheckBox chckbxSha;
 
 	/**
 	 * Launch the application.
@@ -47,19 +49,19 @@ public class ViewMain extends JFrame {
 	public ViewMain() {
 		setTitle("Iniciar aplicação");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 368, 234);
+		setBounds(100, 100, 444, 234);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		
 		btnNovoAlbum = new JButton("+ Novo Album");
-		btnNovoAlbum.setBounds(5, 76, 342, 114);
+		btnNovoAlbum.setBounds(42, 70, 342, 114);
 		btnNovoAlbum.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
 		contentPane.setLayout(null);
-		btnNovoAlbum.setFont(new Font("Tahoma", Font.BOLD, 31));
+		btnNovoAlbum.setFont(new Font("Tahoma", Font.BOLD, 21));
 		contentPane.add(btnNovoAlbum);
 		
 		lblHashGerado = new JLabel("Hash Gerado");
@@ -72,7 +74,7 @@ public class ViewMain extends JFrame {
 		
 		txtHash = new JTextField();
 		txtHash.setText("Hash");
-		txtHash.setBounds(111, 8, 86, 20);
+		txtHash.setBounds(111, 8, 211, 20);
 		contentPane.add(txtHash);
 		txtHash.setColumns(10);
 		
@@ -81,6 +83,10 @@ public class ViewMain extends JFrame {
 		txtPorta.setBounds(111, 33, 86, 20);
 		contentPane.add(txtPorta);
 		txtPorta.setColumns(10);
+		
+		chckbxSha = new JCheckBox("SHA1");
+		chckbxSha.setBounds(328, 7, 78, 23);
+		contentPane.add(chckbxSha);
 	}
 	
 	public void addBtnListener(ActionListener a) {
@@ -102,6 +108,13 @@ public class ViewMain extends JFrame {
 	public void setTxtHash(JTextField txtHash) {
 		this.txtHash = txtHash;
 	}
-	
+
+	public JCheckBox getChckbxSha() {
+		return chckbxSha;
+	}
+
+	public void setChckbxSha(JCheckBox chckbxSha) {
+		this.chckbxSha = chckbxSha;
+	}
 	
 }

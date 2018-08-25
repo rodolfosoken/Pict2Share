@@ -227,7 +227,8 @@ public class ControllerAlbum {
 				picture.setImg(bufferImg);
 				picture.setName(file.getName());
 				picture.setDate(new Date().toString());
-
+				
+				view.setTextFieldImageName(picture.getName());
 				view.setImg(new ImageIcon(picture.getImg()));
 				view.setBtnSalvar(true);
 

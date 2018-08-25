@@ -9,6 +9,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
 
+import javax.swing.AbstractListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -19,10 +20,12 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.ListSelectionModel;
+
+import model.Picture;
 
 /**
  * Classe que representa a GUI de um álbum.
@@ -44,7 +47,7 @@ public class ViewAlbum extends JFrame {
 	private JLabel lblStatusDht;
 	private JLabel lblImage;
 	private JMenuItem mntmCarregarImagem;
-	private JList list;
+	private JList<Picture> list;
 	private JLabel lblImagensArmazenadosNeste;
 	private JLabel lblProximo;
 	private JTextField txtNextnode;
@@ -128,11 +131,11 @@ public class ViewAlbum extends JFrame {
 		textFieldIdNode.setColumns(10);
 		
 		JLabel lblNomeDaImagem = new JLabel("Nome da Imagem :");
-		lblNomeDaImagem.setBounds(380, 95, 148, 14);
+		lblNomeDaImagem.setBounds(367, 95, 148, 14);
 		contentPane.add(lblNomeDaImagem);
 		
 		textFieldImageName = new JTextField();
-		textFieldImageName.setBounds(517, 92, 167, 20);
+		textFieldImageName.setBounds(484, 92, 200, 20);
 		contentPane.add(textFieldImageName);
 		textFieldImageName.setColumns(10);
 		
@@ -173,7 +176,7 @@ public class ViewAlbum extends JFrame {
 		lblVisualizaoDaImagem.setBounds(10, 85, 200, 29);
 		contentPane.add(lblVisualizaoDaImagem);
 		
-		list = new JList();
+		list = new JList<Picture>();
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		list.setBounds(810, 218, 209, 297);
 		contentPane.add(list);
@@ -205,7 +208,7 @@ public class ViewAlbum extends JFrame {
 		txtPrevnode.setColumns(10);
 		
 		btnCarregar = new JButton("Carregar...");
-		btnCarregar.setBounds(220, 91, 89, 23);
+		btnCarregar.setBounds(191, 91, 138, 23);
 		contentPane.add(btnCarregar);
 		
 		btnAtualizar = new JButton("Atualizar");
@@ -255,6 +258,19 @@ public class ViewAlbum extends JFrame {
 	}
 	
 	
+	
+	public String getTextFieldImageName() {
+		return textFieldImageName.getText();
+	}
+
+	public void setTextFieldImageName(String text) {
+		this.textFieldImageName.setText(text);
+	}
+	
+	public void setListImg(AbstractListModel<Picture> model) {
+		this.list.setModel(model);
+	}
+
 	/**
 	 * Define a imagem que aparecerá no quadro de visualização.
 	 * <br> Altera a escala da imagem para caber no quadro

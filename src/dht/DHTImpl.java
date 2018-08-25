@@ -3,6 +3,7 @@ package dht;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.rmi.AccessException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.ConnectException;
@@ -156,14 +157,14 @@ public class DHTImpl implements DHT {
 		switch (msg.getType()) {
 		case JOIN:
 			System.out.println(node.getId() + " : JOIN recebido.");
-			int src = Integer.parseInt(msg.getSource().split(";")[2]);
-			int idPrev = -1, thisNode = Integer.parseInt(node.getId());
+			BigInteger src = new BigInteger(msg.getSource().split(";")[2],16);
+			BigInteger idPrev = new BigInteger("0",16), thisNode = new BigInteger(node.getId(),16);
 			if (getPrev() != null)
-				idPrev = Integer.parseInt(getPrev().getIdNode());
-			if (idPrev < src || (thisNode < idPrev)) { // se o anterior for maior que este nó,
+				idPrev = new BigInteger(getPrev().getIdNode(),16);
+			if (idPrev.compareTo(src) < 0 || (thisNode.compareTo(idPrev) < 0)) { // se o anterior for maior que este nó,
 														// então este é o sucessor do último,
 														// e deve-se proceder com a inserção
-				if (src <= thisNode || getNext() == null || (thisNode < idPrev && src > idPrev)) {
+				if (src.compareTo(thisNode) <= 0 || getNext() == null || (thisNode.compareTo(idPrev) < 0 && src.compareTo(idPrev) > 0)) {
 					System.out.println(node.getId() + " : JOIN Adicionando: " + msg.getSource().split(";")[2]+"...");
 					Message resp = new Message(TypeMessage.JOIN_OK);
 					resp.setSource(node.toString());
@@ -216,7 +217,11 @@ public class DHTImpl implements DHT {
 			System.out.println(node.getId() + ": next : " + node.getNext().getIdNode());
 			break;
 		case STORE:
-			System.out.println("store");
+			System.out.println(node.getId()+": STORE recebida.");
+			BigInteger keyStore3 = new BigInteger(msg.getDest(),16), 
+					idCurrentNode3 = new BigInteger(node.getId(),16),
+					idPrev3 = new BigInteger(getPrev().getIdNode(),16);
+			
 			break;
 		case LEAVE:
 			System.out.println("leave");

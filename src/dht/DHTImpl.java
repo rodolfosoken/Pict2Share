@@ -109,6 +109,7 @@ public class DHTImpl implements DHT {
 				DHT stub = (DHT) UnicastRemoteObject.exportObject(this, 0);
 				registryLocal.bind(node.getId(), stub);
 				status = "Nova DHT Iniciada: Conectado! | " + node.getIp();
+				node.setPrev(this);
 				System.out.println(status);
 				isConnected = true;
 				isInserted = true;
@@ -166,11 +167,11 @@ public class DHTImpl implements DHT {
 					System.out.println(node.getId() + " : JOIN Adicionando: " + msg.getSource().split(";")[2]+"...");
 					Message resp = new Message(TypeMessage.JOIN_OK);
 					resp.setSource(node.toString());
-					if (node.getPrev() != null) {
-						String ref = getPrev().getNode();
-						resp.setArgs(ref);
-					}
-					DHT nodeSrc = (DHT) registryRemote.lookup(String.valueOf(src));
+					if (node.getPrev() != null) 
+						resp.setArgs(getPrev().getNode().toString());
+					else
+						resp.setArgs(getNode().toString());
+					DHT nodeSrc = (DHT) registryRemote.lookup(msg.getSource().split(";")[2]);
 					node.setPrev(nodeSrc);
 					if (node.getNext() == null)
 						node.setNext(nodeSrc);
@@ -210,7 +211,8 @@ public class DHTImpl implements DHT {
 			break;
 		case NEW_NODE:
 			System.out.println(node.getId() + ": NEW_NODE recebida.");
-			node.setNext(getNext().getPrev());
+			DHT nodeSrc2 = (DHT) registryRemote.lookup(msg.getSource().split(";")[2]);
+			node.setNext(nodeSrc2);			
 			System.out.println(node.getId() + ": next : " + node.getNext().getIdNode());
 			break;
 		case STORE:

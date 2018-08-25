@@ -22,6 +22,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.ListSelectionModel;
 
 /**
  * Classe que representa a GUI de um álbum.
@@ -45,6 +46,11 @@ public class ViewAlbum extends JFrame {
 	private JMenuItem mntmCarregarImagem;
 	private JList list;
 	private JLabel lblImagensArmazenadosNeste;
+	private JLabel lblProximo;
+	private JTextField txtNextnode;
+	private JLabel lblAnterior;
+	private JTextField txtPrevnode;
+	private JButton btnCarregar;
 
 	/**
 	 * Launch the application.
@@ -86,18 +92,18 @@ public class ViewAlbum extends JFrame {
 		
 		JPanel panelPicture = new JPanel();
 		panelPicture.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		panelPicture.setBounds(34, 119, 757, 396);
+		panelPicture.setBounds(34, 119, 766, 396);
 		contentPane.add(panelPicture);
 		panelPicture.setLayout(null);
 		
 		lblImage = new JLabel("");
 		lblImage.setHorizontalAlignment(SwingConstants.CENTER);
-		lblImage.setBounds(10, 11, 737, 374);
+		lblImage.setBounds(10, 11, 746, 374);
 		panelPicture.add(lblImage);
 		
 		btnSalvar = new JButton("Salvar");
 		btnSalvar.setEnabled(false);
-		btnSalvar.setBounds(363, 526, 89, 23);
+		btnSalvar.setBounds(386, 527, 89, 23);
 		contentPane.add(btnSalvar);
 		
 		textFieldPath = new JTextField();
@@ -111,21 +117,21 @@ public class ViewAlbum extends JFrame {
 		contentPane.add(lblArquivoInicial);
 		
 		JLabel lblIdDoN = new JLabel("Nó (IP; Porta; Hash):");
-		lblIdDoN.setBounds(586, 48, 148, 14);
+		lblIdDoN.setBounds(846, 17, 148, 14);
 		contentPane.add(lblIdDoN);
 		
 		textFieldIdNode = new JTextField();
 		textFieldIdNode.setEditable(false);
-		textFieldIdNode.setBounds(744, 45, 167, 20);
+		textFieldIdNode.setBounds(846, 42, 173, 20);
 		contentPane.add(textFieldIdNode);
 		textFieldIdNode.setColumns(10);
 		
 		JLabel lblNomeDaImagem = new JLabel("Nome da Imagem :");
-		lblNomeDaImagem.setBounds(586, 18, 148, 14);
+		lblNomeDaImagem.setBounds(380, 95, 148, 14);
 		contentPane.add(lblNomeDaImagem);
 		
 		textFieldImageName = new JTextField();
-		textFieldImageName.setBounds(744, 15, 167, 20);
+		textFieldImageName.setBounds(517, 92, 167, 20);
 		contentPane.add(textFieldImageName);
 		textFieldImageName.setColumns(10);
 		
@@ -135,7 +141,7 @@ public class ViewAlbum extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 			}
 		});
-		btnBuscar.setBounds(921, 13, 98, 23);
+		btnBuscar.setBounds(702, 91, 98, 23);
 		contentPane.add(btnBuscar);
 		
 		JLabel lblDht = new JLabel("Status da DHT :");
@@ -161,19 +167,45 @@ public class ViewAlbum extends JFrame {
 		contentPane.add(btnDesconectar);
 		
 		JLabel lblVisualizaoDaImagem = new JLabel("Visualização da Imagem:");
+		lblVisualizaoDaImagem.setHorizontalAlignment(SwingConstants.CENTER);
 		lblVisualizaoDaImagem.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblVisualizaoDaImagem.setBounds(137, 90, 200, 29);
+		lblVisualizaoDaImagem.setBounds(10, 85, 200, 29);
 		contentPane.add(lblVisualizaoDaImagem);
 		
 		list = new JList();
-		list.setBounds(801, 119, 218, 396);
+		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		list.setBounds(810, 218, 209, 297);
 		contentPane.add(list);
 		
 		lblImagensArmazenadosNeste = new JLabel("Dados armazenados neste nó:");
 		lblImagensArmazenadosNeste.setHorizontalAlignment(SwingConstants.CENTER);
 		lblImagensArmazenadosNeste.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblImagensArmazenadosNeste.setBounds(810, 90, 209, 23);
+		lblImagensArmazenadosNeste.setBounds(810, 184, 209, 23);
 		contentPane.add(lblImagensArmazenadosNeste);
+		
+		lblProximo = new JLabel("Próximo:");
+		lblProximo.setBounds(846, 73, 109, 14);
+		contentPane.add(lblProximo);
+		
+		txtNextnode = new JTextField();
+		txtNextnode.setEditable(false);
+		txtNextnode.setBounds(846, 91, 173, 20);
+		contentPane.add(txtNextnode);
+		txtNextnode.setColumns(10);
+		
+		lblAnterior = new JLabel("Anterior:");
+		lblAnterior.setBounds(846, 122, 89, 14);
+		contentPane.add(lblAnterior);
+		
+		txtPrevnode = new JTextField();
+		txtPrevnode.setEditable(false);
+		txtPrevnode.setBounds(846, 144, 173, 20);
+		contentPane.add(txtPrevnode);
+		txtPrevnode.setColumns(10);
+		
+		btnCarregar = new JButton("Carregar...");
+		btnCarregar.setBounds(220, 91, 89, 23);
+		contentPane.add(btnCarregar);
 		
 		
 		addWindowListener(new WindowAdapter()
@@ -206,11 +238,13 @@ public class ViewAlbum extends JFrame {
 	
 	public void addCarregarImgListener(ActionListener action) {
 		mntmCarregarImagem.addActionListener(action);
+		btnCarregar.addActionListener(action);
 	}
 	
 	public void addChangeListener(PropertyChangeListener listener) {
 		lblStatusDht.addPropertyChangeListener(listener);
 	}
+	
 	
 	/**
 	 * Define a imagem que aparecerá no quadro de visualização.
@@ -268,4 +302,23 @@ public class ViewAlbum extends JFrame {
 	public void setBtnDesconecta(boolean enable) {
 		btnDesconectar.setEnabled(enable);
 	}
+
+	public String getTxtNextnode() {
+		return txtNextnode.getText();
+	}
+
+	public void setTxtNextnode(String text) {
+		this.txtNextnode.setText(text);
+	}
+
+	public String getTxtPrevnode() {
+		return txtPrevnode.getText();
+	}
+
+	public void setTxtPrevnode(String txtPrevnode) {
+		this.txtPrevnode.setText(txtPrevnode);
+	}
+	
+	
+	
 }

@@ -2,9 +2,8 @@ package controller;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.rmi.AlreadyBoundException;
@@ -16,7 +15,6 @@ import java.util.Date;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import dht.Node;
@@ -42,18 +40,24 @@ public class ControllerAlbum {
 		view.addConectaListener(new ConectaListener());
 		view.addDesconectaListener(new DesconectaListener());
 		view.addCarregarImgListener(new CarregaImgListener());
-		view.addChangeListener(new UpdateListener());		
+		view.addWindowFocusListener(new WindowFocusListenerImpl());
 	}
 	
-	
-	class UpdateListener implements PropertyChangeListener {
+	public void updateTextFields() {
+		try {
+			if (node.getNext() != null)
+				view.setTxtNextnode(node.getNext().getNode().toString());
+			if (node.getPrev() != null)
+				view.setTxtPrevnode(node.getPrev().getNode().toString());
+		} catch (RemoteException e) {
+		}
+	}
+	class WindowFocusListenerImpl implements java.awt.event.WindowFocusListener{
 		@Override
-		public void propertyChange(PropertyChangeEvent evt) {
-			if(evt.getPropertyName() == "status")
-				view.setStatus(evt.getNewValue().toString());
-		}	
+		public void windowGainedFocus(WindowEvent e) {updateTextFields();}
+		@Override
+		public void windowLostFocus(WindowEvent e) {}
 	}
-
 	/**
 	 * Classe que implementa as ações ao pressionar o botão "Conecta".
 	 * 
@@ -70,10 +74,9 @@ public class ControllerAlbum {
 				// TODO Auto-generated catch block
 				e3.printStackTrace();
 			}
-			
+
 			/*
-			 * Inicia uma thread para acompanhar 
-			 *  a atualização do status da dht  
+			 * Inicia uma thread para acompanhar a atualização do status da dht
 			 */
 			new Thread(() -> {
 				int count = 0;
@@ -89,11 +92,18 @@ public class ControllerAlbum {
 						break;
 					}
 				}
+				try {
+					if (node.getNext() != null)
+						view.setTxtNextnode(node.getNext().getNode().toString());
+					if (node.getPrev() != null)
+						view.setTxtPrevnode(node.getPrev().getNode().toString());
+				} catch (RemoteException e1) {
+				}
 			}).start();
 
 			/*
-			 * Inicia a operação join em uma thread separada para não 
-			 * travar a interface do usuário
+			 * Inicia a operação join em uma thread separada para não travar a interface do
+			 * usuário
 			 */
 			new Thread(() -> {
 
@@ -101,7 +111,6 @@ public class ControllerAlbum {
 					view.setBtnConectar(false);
 					view.setBtnDesconecta(true);
 					node.getDht().join(view.getPath());
-					new JLabel().addPropertyChangeListener(new UpdateListener());
 					view.setStatus(node.getDht().getStatus());
 					view.setIdNode(node.toString());
 					view.setBtnDesconecta(true);

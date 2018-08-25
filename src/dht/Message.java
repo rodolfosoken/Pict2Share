@@ -14,6 +14,7 @@ public class Message  implements Serializable{
 	private String source;
 	private String dest;
 	private String args;
+	private byte[] data;
 	
 	public Message(TypeMessage type, String source, String dest, String args) {
 		this.type = type;
@@ -24,6 +25,15 @@ public class Message  implements Serializable{
 	
 	public Message(TypeMessage type) {
 		this.type = type;
+	}
+
+	
+	public byte[] getData() {
+		return data;
+	}
+
+	public void setData(byte[] data) {
+		this.data = data;
 	}
 
 	/**

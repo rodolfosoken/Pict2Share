@@ -6,16 +6,26 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.ConnectException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.ExportException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map.Entry;
 
 import javax.imageio.ImageIO;
+import javax.swing.AbstractListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.xml.bind.DatatypeConverter;
 
 import dht.Node;
 import gui.ViewAlbum;
@@ -42,34 +52,99 @@ public class ControllerAlbum {
 		view.addCarregarImgListener(new CarregaImgListener());
 		view.addWindowFocusListener(new WindowFocusListenerImpl());
 		view.addAtualizaListener(new AtualizaListener());
+		view.addSalvaListener(new SalvaAction());
+		view.addBtnCalcHash(new HashNameImg());
 	}
-	
+
+	/**
+	 * Implementa a ação de salvar uma imagem
+	 */
+	class SalvaAction implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			try {
+				
+				
+				byte[] data = node.serialize(picture);
+				
+				String inputName= view.getTextFieldImageName().getText(),
+						inputId = view.getTxtHashImg();
+				picture.setId(inputId);
+				picture.setName(inputName);
+				node.getDht().store(picture.getId(), data);
+				
+				resetImg();
+				view.setImg(new ImageIcon("Imagem foi Salva."));
+				
+				
+			} catch (RemoteException e) {
+				JOptionPane.showMessageDialog(view.getContentPane(), "Erro ao Salvar Imagem: " + e.getMessage(), // mensagem
+						"Error: Salvar imagem", // titulo da janela
+						JOptionPane.ERROR_MESSAGE);
+				e.printStackTrace();
+			} catch (NotBoundException e) {
+				JOptionPane.showMessageDialog(view.getContentPane(), "Erro ao Salvar Imagem: " + e.getMessage(), // mensagem
+						"Error: Salvar imagem", // titulo da janela
+						JOptionPane.ERROR_MESSAGE);
+				e.printStackTrace();
+			} catch (IOException e) {
+				JOptionPane.showMessageDialog(view.getContentPane(), "Erro ao Salvar Imagem: " + e.getMessage(), // mensagem
+						"Error: Salvar imagem", // titulo da janela
+						JOptionPane.ERROR_MESSAGE);
+				e.printStackTrace();
+			}
+
+		}
+
+	}
+
+	public void resetImg() {
+		view.setImg(new ImageIcon("Imagem."));
+		view.getTextFieldImageName().setText("");
+		view.setTxtHashImg("");
+		view.setBtnSalvar(false);
+		view.getBtnCalchash().setEnabled(false);
+		updateTextFields();
+	}
+	/**
+	 * Atualiza os atributos do nó na tela.
+	 */
 	public void updateTextFields() {
 		try {
 			if (node.getNext() != null)
 				view.setTxtNextnode(node.getNext().getNode().toString());
 			if (node.getPrev() != null)
 				view.setTxtPrevnode(node.getPrev().getNode().toString());
+			view.setListImg(loadListPictures());
 		} catch (RemoteException e) {
 		}
 	}
-	
-	class AtualizaListener implements ActionListener{
+
+	/**
+	 * Atualiza os campos ao receber eventos
+	 */
+	class AtualizaListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			updateTextFields();
 		}
 	}
-	
+
 	/**
 	 * Atualiza Campos ao voltar o foco na janela
 	 */
-	class WindowFocusListenerImpl implements java.awt.event.WindowFocusListener{
+	class WindowFocusListenerImpl implements java.awt.event.WindowFocusListener {
 		@Override
-		public void windowGainedFocus(WindowEvent e) {updateTextFields();}
+		public void windowGainedFocus(WindowEvent e) {
+			updateTextFields();
+		}
+
 		@Override
-		public void windowLostFocus(WindowEvent e) {}
+		public void windowLostFocus(WindowEvent e) {
+		}
 	}
+
 	/**
 	 * Classe que implementa as ações ao pressionar o botão "Conecta".
 	 * 
@@ -126,6 +201,11 @@ public class ControllerAlbum {
 					view.setStatus(node.getDht().getStatus());
 					view.setIdNode(node.toString());
 					view.setBtnDesconecta(true);
+					view.getBtnAtualizar().setEnabled(true);
+					view.getBtnCarregar().setEnabled(true);
+					view.getBtnBuscar().setEnabled(true);
+					view.getTxtHashimg().setEditable(true);
+					view.getTextFieldImageName().setEditable(true);
 				} catch (ConnectException e1) {
 					JOptionPane.showMessageDialog(view.getContentPane(),
 							"Erro ao iniciar conexão: " + e1.getMessage() + "\n Tente (re)iniciar o rmiregistry ", // mensagem
@@ -211,12 +291,15 @@ public class ControllerAlbum {
 		public void actionPerformed(ActionEvent e) {
 			JFileChooser fileChooser = new JFileChooser();
 			fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			FileNameExtensionFilter filter = new FileNameExtensionFilter("Arquivo de imagens", "jpg", "jpeg");
+			fileChooser.setFileFilter(filter);
 			int status = fileChooser.showOpenDialog(view.getContentPane());
 			if (status == JFileChooser.APPROVE_OPTION) {
 				File file = fileChooser.getSelectedFile();
 				BufferedImage bufferImg = null;
 				try {
 					bufferImg = ImageIO.read(file);
+					picture.setImg(Picture.imageToByteArray(bufferImg));
 				} catch (IOException e1) {
 					JOptionPane.showMessageDialog(view.getContentPane(), "Erro ao carregar imagem.", // mensagem
 							"Imagem não foi carregada", // titulo da janela
@@ -224,16 +307,72 @@ public class ControllerAlbum {
 					e1.printStackTrace();
 				}
 
-				picture.setImg(bufferImg);
 				picture.setName(file.getName());
 				picture.setDate(new Date().toString());
+				picture.setId(sha1(picture.getName()));
 				
-				view.setTextFieldImageName(picture.getName());
+				view.getBtnCalchash().setEnabled(true);
+				view.setTxtHashImg(picture.getId());
+				view.getTextFieldImageName().setText(picture.getName());
 				view.setImg(new ImageIcon(picture.getImg()));
 				view.setBtnSalvar(true);
 
 			}
 		}
+	}
+
+	private AbstractListModel<Picture> loadListPictures() throws RemoteException {
+
+		List<Picture> listPictures = new ArrayList<Picture>();
+		for (Entry<String,byte[]> data : node.getData().entrySet()) {
+			try {
+				Picture pic = (Picture) node.deserialize(data.getValue());
+				pic.setId(data.getKey());
+				listPictures.add(pic);
+			} catch (ClassNotFoundException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		return new AbstractListModel<Picture>() {
+			private static final long serialVersionUID = 1L;
+
+			public int getSize() {
+				return listPictures.size();
+			}
+
+			public Picture getElementAt(int index) {
+				return listPictures.get(index);
+			}
+		};
+	}
+	
+	/**
+	 * Faz o hash do nome atual da imagem.
+	 */
+	class HashNameImg implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			picture.setId(sha1(view.getTextFieldImageName().getText()));
+			view.setTxtHashImg(picture.getId());
+		}
+		
+	}
+	
+	private String sha1(String input) {
+	    String sha1 = null;
+	    try {
+			MessageDigest msdDigest = MessageDigest.getInstance("SHA-1");
+			msdDigest.update(input.getBytes("UTF-8"), 0, input.length());
+			sha1 = DatatypeConverter.printHexBinary(msdDigest.digest());
+		} catch (UnsupportedEncodingException | NoSuchAlgorithmException e1) {
+			JOptionPane.showMessageDialog(view.getContentPane(), "Erro ao criar hash: " + e1.getMessage(), // mensagem
+					"Error: hash", // titulo da janela
+					JOptionPane.ERROR_MESSAGE);
+		}
+	    return sha1;
 	}
 
 	/**

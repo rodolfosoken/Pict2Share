@@ -94,7 +94,8 @@ public class DHTImpl implements DHT {
 							status = e.getLocalizedMessage();
 							System.out.println(node.getId() + ": " + e.getLocalizedMessage());
 							e.printStackTrace();
-						}
+						}else
+							System.out.println(e.getMessage());
 					} catch (NotBoundException e) {
 
 					}
@@ -142,8 +143,20 @@ public class DHTImpl implements DHT {
 	}
 
 	@Override
-	public boolean store(String key, byte[] data) {
-		node.getData().put(key, data);
+	public boolean store(String key, byte[] data) throws RemoteException, NotBoundException {
+		BigInteger keyStore = new BigInteger(key,16), 
+				thisNode = new BigInteger(node.getId());
+		Message msg = new Message(TypeMessage.STORE);
+		msg.setDest(key);
+		msg.setSource(node.toString());
+		msg.setData(data);
+		System.out.println(node.getId()+": Enviando STORE.");
+		if(keyStore.compareTo(thisNode) < 0 && getPrev() != null)
+			getPrev().procMessage(msg);
+		else if(getNext() !=null)
+			getNext().procMessage(msg);
+		else
+			procMessage(msg);
 		return true;
 	}
 
@@ -220,7 +233,29 @@ public class DHTImpl implements DHT {
 			System.out.println(node.getId()+": STORE recebida.");
 			BigInteger keyStore3 = new BigInteger(msg.getDest(),16), 
 					idCurrentNode3 = new BigInteger(node.getId(),16),
-					idPrev3 = new BigInteger(getPrev().getIdNode(),16);
+					idPrev3 = new BigInteger("0");
+			if (getPrev() != null)
+				idPrev3 = new BigInteger(getPrev().getIdNode(),16);
+			if (idPrev3.compareTo(keyStore3) < 0 || (idCurrentNode3.compareTo(idPrev3) < 0)) { // se o anterior for maior que este nó,
+														// então este é o sucessor do último,
+														// e deve-se proceder com a inserção
+				if (keyStore3.compareTo(idCurrentNode3) <= 0 || getNext() == null || (idCurrentNode3.compareTo(idPrev3) < 0 && keyStore3.compareTo(idPrev3) > 0)) {
+					System.out.println(node.getId() + " : STORE salvando img de: " + msg.getSource().split(";")[2]+"...");
+					node.getData().put(msg.getDest(), msg.getData());					
+				} else {
+					// se o src (nó ingressante) é maior que este
+					// nó, então passar para o próximo nó
+					System.out.println(node.getId() + " : STORE repassado ao próximo.");
+					this.node.getNext().procMessage(msg);
+				}
+
+			} else {
+				// se o src (nó ingressante) é menor que o antecessor
+				// deste nó, então passar ao anterior
+				System.out.println(node.getId() + " : STORE repassado ao anterior.");
+				this.node.getPrev().procMessage(msg);
+			}
+			
 			
 			break;
 		case LEAVE:

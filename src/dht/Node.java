@@ -1,5 +1,10 @@
 package dht;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,7 +25,7 @@ public class Node {
 	private DHT next;
 	
 	/**  O dado armazenado no nó. */
-	private Map<String,Object> data;
+	private Map<String,byte[]> data;
 	
 	/** Ip do no**. */
 	private String ip;
@@ -117,7 +122,7 @@ public class Node {
 	 *
 	 * @return the data
 	 */
-	public Map<String, Object> getData() {
+	public Map<String, byte[]> getData() {
 		return data;
 	}
 
@@ -128,7 +133,7 @@ public class Node {
 	 *
 	 * @param data the data
 	 */
-	public void setData(Map<String, Object> data) {
+	public void setData(Map<String, byte[]> data) {
 		this.data = data;
 	}
 
@@ -199,8 +204,6 @@ public class Node {
 	}
 
 
-
-
 	@Override
 	public String toString() {
 		return this.ip+";"+this.port+";"+this.id;
@@ -226,5 +229,16 @@ public class Node {
 		return id.hashCode();
 	}
 	
+	public byte[] serialize(Object obj) throws IOException {
+	    ByteArrayOutputStream out = new ByteArrayOutputStream();
+	    ObjectOutputStream os = new ObjectOutputStream(out);
+	    os.writeObject(obj);
+	    return out.toByteArray();
+	}
+	public Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
+	    ByteArrayInputStream in = new ByteArrayInputStream(data);
+	    ObjectInputStream is = new ObjectInputStream(in);
+	    return is.readObject();
+	}
 
 }

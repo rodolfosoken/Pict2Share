@@ -55,6 +55,9 @@ public class ViewAlbum extends JFrame {
 	private JTextField txtPrevnode;
 	private JButton btnCarregar;
 	private JButton btnAtualizar;
+	private JTextField txtHashimg;
+	private JLabel lblHashDaImagem;
+	private JButton btnCalchash;
 
 	/**
 	 * Launch the application.
@@ -79,7 +82,7 @@ public class ViewAlbum extends JFrame {
 	public ViewAlbum() {
 		setTitle("Álbum de Fotos");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 1045, 621);
+		setBounds(100, 100, 1045, 654);
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -96,7 +99,7 @@ public class ViewAlbum extends JFrame {
 		
 		JPanel panelPicture = new JPanel();
 		panelPicture.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		panelPicture.setBounds(34, 119, 766, 396);
+		panelPicture.setBounds(26, 159, 766, 390);
 		contentPane.add(panelPicture);
 		panelPicture.setLayout(null);
 		
@@ -107,7 +110,7 @@ public class ViewAlbum extends JFrame {
 		
 		btnSalvar = new JButton("Salvar");
 		btnSalvar.setEnabled(false);
-		btnSalvar.setBounds(386, 527, 89, 23);
+		btnSalvar.setBounds(385, 561, 89, 23);
 		contentPane.add(btnSalvar);
 		
 		textFieldPath = new JTextField();
@@ -121,31 +124,33 @@ public class ViewAlbum extends JFrame {
 		contentPane.add(lblArquivoInicial);
 		
 		JLabel lblIdDoN = new JLabel("Nó (IP; Porta; Hash):");
-		lblIdDoN.setBounds(810, 14, 148, 14);
+		lblIdDoN.setBounds(828, 67, 148, 14);
 		contentPane.add(lblIdDoN);
 		
 		textFieldIdNode = new JTextField();
 		textFieldIdNode.setEditable(false);
-		textFieldIdNode.setBounds(810, 39, 173, 20);
+		textFieldIdNode.setBounds(828, 92, 173, 20);
 		contentPane.add(textFieldIdNode);
 		textFieldIdNode.setColumns(10);
 		
 		JLabel lblNomeDaImagem = new JLabel("Nome da Imagem :");
-		lblNomeDaImagem.setBounds(367, 95, 148, 14);
+		lblNomeDaImagem.setBounds(363, 94, 148, 14);
 		contentPane.add(lblNomeDaImagem);
 		
 		textFieldImageName = new JTextField();
-		textFieldImageName.setBounds(484, 92, 200, 20);
+		textFieldImageName.setEditable(false);
+		textFieldImageName.setBounds(484, 91, 200, 20);
 		contentPane.add(textFieldImageName);
 		textFieldImageName.setColumns(10);
 		
 		btnBuscar = new JButton("Buscar");
+		btnBuscar.setEnabled(false);
 		btnBuscar.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 			}
 		});
-		btnBuscar.setBounds(702, 91, 98, 23);
+		btnBuscar.setBounds(694, 90, 98, 23);
 		contentPane.add(btnBuscar);
 		
 		JLabel lblDht = new JLabel("Status da DHT :");
@@ -173,47 +178,64 @@ public class ViewAlbum extends JFrame {
 		JLabel lblVisualizaoDaImagem = new JLabel("Visualização da Imagem:");
 		lblVisualizaoDaImagem.setHorizontalAlignment(SwingConstants.CENTER);
 		lblVisualizaoDaImagem.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblVisualizaoDaImagem.setBounds(10, 85, 200, 29);
+		lblVisualizaoDaImagem.setBounds(10, 119, 200, 29);
 		contentPane.add(lblVisualizaoDaImagem);
 		
 		list = new JList<Picture>();
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		list.setBounds(810, 218, 209, 297);
+		list.setBounds(809, 252, 209, 297);
 		contentPane.add(list);
 		
 		lblImagensArmazenadosNeste = new JLabel("Dados armazenados neste nó:");
 		lblImagensArmazenadosNeste.setHorizontalAlignment(SwingConstants.CENTER);
 		lblImagensArmazenadosNeste.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblImagensArmazenadosNeste.setBounds(810, 184, 209, 23);
+		lblImagensArmazenadosNeste.setBounds(809, 218, 209, 23);
 		contentPane.add(lblImagensArmazenadosNeste);
 		
 		lblProximo = new JLabel("Próximo:");
-		lblProximo.setBounds(810, 70, 109, 14);
+		lblProximo.setBounds(828, 123, 109, 14);
 		contentPane.add(lblProximo);
 		
 		txtNextnode = new JTextField();
 		txtNextnode.setEditable(false);
-		txtNextnode.setBounds(810, 88, 173, 20);
+		txtNextnode.setBounds(828, 141, 173, 20);
 		contentPane.add(txtNextnode);
 		txtNextnode.setColumns(10);
 		
 		lblAnterior = new JLabel("Anterior:");
-		lblAnterior.setBounds(810, 119, 89, 14);
+		lblAnterior.setBounds(828, 172, 89, 14);
 		contentPane.add(lblAnterior);
 		
 		txtPrevnode = new JTextField();
 		txtPrevnode.setEditable(false);
-		txtPrevnode.setBounds(810, 141, 173, 20);
+		txtPrevnode.setBounds(828, 194, 173, 20);
 		contentPane.add(txtPrevnode);
 		txtPrevnode.setColumns(10);
 		
 		btnCarregar = new JButton("Carregar...");
-		btnCarregar.setBounds(191, 91, 138, 23);
+		btnCarregar.setEnabled(false);
+		btnCarregar.setBounds(191, 125, 138, 23);
 		contentPane.add(btnCarregar);
 		
 		btnAtualizar = new JButton("Atualizar");
-		btnAtualizar.setBounds(940, 0, 89, 23);
+		btnAtualizar.setEnabled(false);
+		btnAtualizar.setBounds(929, 30, 89, 23);
 		contentPane.add(btnAtualizar);
+		
+		txtHashimg = new JTextField();
+		txtHashimg.setEditable(false);
+		txtHashimg.setBounds(430, 128, 254, 20);
+		contentPane.add(txtHashimg);
+		txtHashimg.setColumns(10);
+		
+		lblHashDaImagem = new JLabel("Hash ID:");
+		lblHashDaImagem.setBounds(363, 134, 117, 14);
+		contentPane.add(lblHashDaImagem);
+		
+		btnCalchash = new JButton("Calc. Hash");
+		btnCalchash.setEnabled(false);
+		btnCalchash.setBounds(694, 125, 98, 23);
+		contentPane.add(btnCalchash);
 		
 		
 		addWindowListener(new WindowAdapter()
@@ -257,18 +279,27 @@ public class ViewAlbum extends JFrame {
 		btnAtualizar.addActionListener(action);
 	}
 	
+	public void addBtnCalcHash(ActionListener action) {
+		btnCalchash.addActionListener(action);
+	}
 	
+
 	
-	public String getTextFieldImageName() {
-		return textFieldImageName.getText();
+	public JTextField getTextFieldImageName() {
+		return textFieldImageName;
 	}
 
-	public void setTextFieldImageName(String text) {
-		this.textFieldImageName.setText(text);
-	}
-	
 	public void setListImg(AbstractListModel<Picture> model) {
 		this.list.setModel(model);
+	}
+
+	
+	public String getTxtHashImg() {
+		return txtHashimg.getText();
+	}
+
+	public void setTxtHashImg(String txt) {
+		this.txtHashimg.setText(txt);
 	}
 
 	/**
@@ -343,6 +374,51 @@ public class ViewAlbum extends JFrame {
 	public void setTxtPrevnode(String txtPrevnode) {
 		this.txtPrevnode.setText(txtPrevnode);
 	}
+
+	public JButton getBtnBuscar() {
+		return btnBuscar;
+	}
+
+	public void setBtnBuscar(JButton btnBuscar) {
+		this.btnBuscar = btnBuscar;
+	}
+
+	public JButton getBtnCarregar() {
+		return btnCarregar;
+	}
+
+	public void setBtnCarregar(JButton btnCarregar) {
+		this.btnCarregar = btnCarregar;
+	}
+
+	public JButton getBtnAtualizar() {
+		return btnAtualizar;
+	}
+
+	public void setBtnAtualizar(JButton btnAtualizar) {
+		this.btnAtualizar = btnAtualizar;
+	}
+
+	public JButton getBtnCalchash() {
+		return btnCalchash;
+	}
+
+	public void setBtnCalchash(JButton btnCalchash) {
+		this.btnCalchash = btnCalchash;
+	}
+
+	public JTextField getTxtHashimg() {
+		return txtHashimg;
+	}
+
+	public void setTxtHashimg(JTextField txtHashimg) {
+		this.txtHashimg = txtHashimg;
+	}
+
+	public void setTextFieldImageName(JTextField textFieldImageName) {
+		this.textFieldImageName = textFieldImageName;
+	}
+	
 	
 	
 	

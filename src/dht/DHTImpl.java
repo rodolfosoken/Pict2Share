@@ -3,6 +3,7 @@ package dht;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.rmi.AccessException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.ConnectException;
 import java.rmi.NotBoundException;
@@ -23,11 +24,13 @@ public class DHTImpl implements DHT {
 	// private List<Node> nodes;
 
 	private Node node;
-	private Registry registry;
+	private Registry registryRemote;
+	private Registry registryLocal;
 	private String status;
 	private boolean isConnected;
 	private boolean isInserted;
 	private boolean isStoped;
+	private boolean isRemote;
 
 	public DHTImpl(Node node) {
 		this.node = node;
@@ -35,6 +38,7 @@ public class DHTImpl implements DHT {
 		isConnected = false;
 		isInserted = false;
 		isStoped = false;
+		isRemote=false;
 	}
 
 	@Override
@@ -56,18 +60,25 @@ public class DHTImpl implements DHT {
 					try {
 						status = "IP:" + ipPortName[0] + " Conectando...";
 						System.out.println(status);
-						registry = LocateRegistry.getRegistry(ipPortName[0], Integer.parseInt(ipPortName[1]));
-						DHT dhtStub = (DHT) registry.lookup(ipPortName[2]);
+						registryRemote = LocateRegistry.getRegistry(ipPortName[0], Integer.parseInt(ipPortName[1]));
+						DHT dhtStub = (DHT) registryRemote.lookup(ipPortName[2]);
 						status = node.getId() + " : " + dhtStub.getIdNode() + " ATIVO | " + ipPortName[0] + ":"
 								+ ipPortName[1];
 						System.out.println(status);
 						isConnected = true;
-
+						if(!ipPortName[0].equals("127.0.0.1")) 
+							isRemote = true;
+						else
+							isRemote = false;
+						
 						// Adiciona os atributos no nó
 						// e realiza o registro do nó no RMI
 						node.setIp(ipPortName[0]);
 						DHT stub = (DHT) UnicastRemoteObject.exportObject(this, Integer.parseInt(node.getPort()));
-						registry.bind(node.getId(), stub);
+						registryLocal = LocateRegistry.getRegistry();
+						registryLocal.bind(node.getId(), stub);
+						if(isRemote)
+							dhtStub.bindDHT(node.getId(), stub);
 
 						// cria e envia a mensagem de join
 						status = "Conectado a: " + ipPortName[0] + " | Enviando mensagem join...";
@@ -78,9 +89,11 @@ public class DHTImpl implements DHT {
 						dhtStub.procMessage(msgJoin);
 						break;
 					} catch (RemoteException e) {
-						status = e.getLocalizedMessage();
-						System.out.println(node.getId() + ": " + e.getLocalizedMessage());
-						e.printStackTrace();
+						if(!(e instanceof ConnectException)) {
+							status = e.getLocalizedMessage();
+							System.out.println(node.getId() + ": " + e.getLocalizedMessage());
+							e.printStackTrace();
+						}
 					} catch (NotBoundException e) {
 
 					}
@@ -92,32 +105,37 @@ public class DHTImpl implements DHT {
 			// Não conseguiu conectar com nenhum nó no arquivo txt
 			// irá criar o nó inicial
 			if (isConnected == false) {
-				registry = LocateRegistry.getRegistry();
+				registryLocal = LocateRegistry.getRegistry();
 				DHT stub = (DHT) UnicastRemoteObject.exportObject(this, 0);
-				registry.bind(node.getId(), stub);
+				registryLocal.bind(node.getId(), stub);
 				status = "Nova DHT Iniciada: Conectado! | " + node.getIp();
 				System.out.println(status);
 				isConnected = true;
 				isInserted = true;
 				isStoped = false;
 			}
+			
+			if(!isRemote)
+				registryRemote = registryLocal;
 
 		}
 		return node.getIp() + ":" + node.getPort();
 	}
-
+	
+	@Override
+	public void bindDHT(String id, DHT stub) throws AccessException, RemoteException, AlreadyBoundException {
+		registryLocal.bind(id, stub);
+	}
 	@Override
 	public void leave() {
-		// se este for o nó inicial será preciso desregistrar o nome no RMI
 		try {
-			registry = LocateRegistry.getRegistry();
 			UnicastRemoteObject.unexportObject(this, true);
-			registry.unbind(node.getId());
+			if(isRemote)
+				registryRemote.unbind(node.getId());
+			registryLocal.unbind(node.getId());
 			isConnected = false;
 			isStoped = true;
 		} catch (RemoteException | NotBoundException e) {
-			// se não há objetos registrados,
-			// a aplicação será encerrada
 		}
 	}
 
@@ -138,23 +156,21 @@ public class DHTImpl implements DHT {
 		case JOIN:
 			System.out.println(node.getId() + " : JOIN recebido.");
 			int src = Integer.parseInt(msg.getSource().split(";")[2]);
-			int idPrev = -1, thisNode = Integer.parseInt(node.getId()), nextNode = Integer.MAX_VALUE;
-			if (getNext() != null)
-				nextNode = Integer.parseInt(getNext().getIdNode());
+			int idPrev = -1, thisNode = Integer.parseInt(node.getId());
 			if (getPrev() != null)
 				idPrev = Integer.parseInt(getPrev().getIdNode());
 			if (idPrev < src || (thisNode < idPrev)) { // se o anterior for maior que este nó,
 														// então este é o sucessor do último,
 														// e deve-se proceder com a inserção
 				if (src <= thisNode || getNext() == null || (thisNode < idPrev && src > idPrev)) {
-					System.out.println(node.getId() + " : JOIN Adicionando: " + msg.getSource().split(";")[2]);
+					System.out.println(node.getId() + " : JOIN Adicionando: " + msg.getSource().split(";")[2]+"...");
 					Message resp = new Message(TypeMessage.JOIN_OK);
 					resp.setSource(node.toString());
 					if (node.getPrev() != null) {
 						String ref = getPrev().getNode();
 						resp.setArgs(ref);
 					}
-					DHT nodeSrc = (DHT) registry.lookup(String.valueOf(src));
+					DHT nodeSrc = (DHT) registryRemote.lookup(String.valueOf(src));
 					node.setPrev(nodeSrc);
 					if (node.getNext() == null)
 						node.setNext(nodeSrc);
@@ -175,10 +191,10 @@ public class DHTImpl implements DHT {
 			break;
 		case JOIN_OK:
 			System.out.println(node.getId() + ": JOIN_OK recebido.");
-			DHT nodeSrc1 = (DHT) registry.lookup(msg.getSource().split(";")[2]);
+			DHT nodeSrc1 = (DHT) registryRemote.lookup(msg.getSource().split(";")[2]);
 			node.setNext(nodeSrc1);
 			if (msg.getArgs() != null) {
-				DHT nodePrev1 = (DHT) registry.lookup(msg.getArgs().split(";")[2]);
+				DHT nodePrev1 = (DHT) registryRemote.lookup(msg.getArgs().split(";")[2]);
 				if (nodePrev1 != null) {
 					node.setPrev(nodePrev1);
 					Message respNewNode = new Message(TypeMessage.NEW_NODE);

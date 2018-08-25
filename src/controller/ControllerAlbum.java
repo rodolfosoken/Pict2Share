@@ -99,6 +99,7 @@ public class ControllerAlbum {
 
 				try {
 					view.setBtnConectar(false);
+					view.setBtnDesconecta(true);
 					node.getDht().join(view.getPath());
 					new JLabel().addPropertyChangeListener(new UpdateListener());
 					view.setStatus(node.getDht().getStatus());

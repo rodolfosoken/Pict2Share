@@ -1,6 +1,7 @@
 package dht;
 
 import java.io.IOException;
+import java.rmi.AccessException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.ConnectException;
 import java.rmi.NotBoundException;
@@ -101,5 +102,7 @@ public interface DHT extends Remote{
 	 * @throws RemoteException
 	 */
 	public DHT getNext()throws RemoteException;
+	
+	public void bindDHT(String id,DHT stub)throws AccessException, RemoteException, AlreadyBoundException;
 
 }

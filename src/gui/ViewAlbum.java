@@ -51,6 +51,7 @@ public class ViewAlbum extends JFrame {
 	private JLabel lblAnterior;
 	private JTextField txtPrevnode;
 	private JButton btnCarregar;
+	private JButton btnAtualizar;
 
 	/**
 	 * Launch the application.
@@ -117,12 +118,12 @@ public class ViewAlbum extends JFrame {
 		contentPane.add(lblArquivoInicial);
 		
 		JLabel lblIdDoN = new JLabel("Nó (IP; Porta; Hash):");
-		lblIdDoN.setBounds(846, 17, 148, 14);
+		lblIdDoN.setBounds(810, 14, 148, 14);
 		contentPane.add(lblIdDoN);
 		
 		textFieldIdNode = new JTextField();
 		textFieldIdNode.setEditable(false);
-		textFieldIdNode.setBounds(846, 42, 173, 20);
+		textFieldIdNode.setBounds(810, 39, 173, 20);
 		contentPane.add(textFieldIdNode);
 		textFieldIdNode.setColumns(10);
 		
@@ -184,28 +185,32 @@ public class ViewAlbum extends JFrame {
 		contentPane.add(lblImagensArmazenadosNeste);
 		
 		lblProximo = new JLabel("Próximo:");
-		lblProximo.setBounds(846, 73, 109, 14);
+		lblProximo.setBounds(810, 70, 109, 14);
 		contentPane.add(lblProximo);
 		
 		txtNextnode = new JTextField();
 		txtNextnode.setEditable(false);
-		txtNextnode.setBounds(846, 91, 173, 20);
+		txtNextnode.setBounds(810, 88, 173, 20);
 		contentPane.add(txtNextnode);
 		txtNextnode.setColumns(10);
 		
 		lblAnterior = new JLabel("Anterior:");
-		lblAnterior.setBounds(846, 122, 89, 14);
+		lblAnterior.setBounds(810, 119, 89, 14);
 		contentPane.add(lblAnterior);
 		
 		txtPrevnode = new JTextField();
 		txtPrevnode.setEditable(false);
-		txtPrevnode.setBounds(846, 144, 173, 20);
+		txtPrevnode.setBounds(810, 141, 173, 20);
 		contentPane.add(txtPrevnode);
 		txtPrevnode.setColumns(10);
 		
 		btnCarregar = new JButton("Carregar...");
 		btnCarregar.setBounds(220, 91, 89, 23);
 		contentPane.add(btnCarregar);
+		
+		btnAtualizar = new JButton("Atualizar");
+		btnAtualizar.setBounds(940, 0, 89, 23);
+		contentPane.add(btnAtualizar);
 		
 		
 		addWindowListener(new WindowAdapter()
@@ -243,6 +248,10 @@ public class ViewAlbum extends JFrame {
 	
 	public void addChangeListener(PropertyChangeListener listener) {
 		lblStatusDht.addPropertyChangeListener(listener);
+	}
+	
+	public void addAtualizaListener(ActionListener action) {
+		btnAtualizar.addActionListener(action);
 	}
 	
 	

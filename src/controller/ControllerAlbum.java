@@ -41,6 +41,7 @@ public class ControllerAlbum {
 		view.addDesconectaListener(new DesconectaListener());
 		view.addCarregarImgListener(new CarregaImgListener());
 		view.addWindowFocusListener(new WindowFocusListenerImpl());
+		view.addAtualizaListener(new AtualizaListener());
 	}
 	
 	public void updateTextFields() {
@@ -52,6 +53,17 @@ public class ControllerAlbum {
 		} catch (RemoteException e) {
 		}
 	}
+	
+	class AtualizaListener implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			updateTextFields();
+		}
+	}
+	
+	/**
+	 * Atualiza Campos ao voltar o foco na janela
+	 */
 	class WindowFocusListenerImpl implements java.awt.event.WindowFocusListener{
 		@Override
 		public void windowGainedFocus(WindowEvent e) {updateTextFields();}

@@ -33,7 +33,7 @@ public interface DHT extends Remote{
 	 * <br>mantendo a consistência do anel da DHT.
 	 * <p> O conteúdo será transferido para o nó sucessor.
 	 */
-	public void leave() throws RemoteException;
+	public void leave() throws RemoteException, NotBoundException;
 	
 	/**
 	 * Armazena um dado na DHT utilizando a chave.
@@ -155,4 +155,6 @@ public interface DHT extends Remote{
 	 * @throws RemoteException
 	 */
 	public void setNotFounded(boolean isNotFounded) throws RemoteException;
+	
+	
 }

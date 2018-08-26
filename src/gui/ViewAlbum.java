@@ -274,20 +274,12 @@ public class ViewAlbum extends JFrame {
 		lblStatusDaImagem.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblStatusDaImagem.setBounds(111, 86, 242, 26);
 		contentPane.add(lblStatusDaImagem);
-		
-		
-		addWindowListener(new WindowAdapter()
-        {
-            @Override
-            public void windowClosing(WindowEvent e)
-            {
-            	if(!btnConectar.isEnabled())
-            		btnDesconectar.doClick();
-                e.getWindow().dispose();
-            }
-        });
+				
 	}
 	
+	public void addWindowlistenerClose (WindowAdapter adapter) {
+		this.addWindowListener(adapter);
+	}
 	
 	public JLabel getLblStatusDaImagem() {
 		return lblStatusDaImagem;
@@ -365,6 +357,23 @@ public class ViewAlbum extends JFrame {
 	
 	public void addBtnBusca(ActionListener action) {
 		this.btnBuscar.addActionListener(action);
+	}
+
+	
+	public JButton getBtnDesconectar() {
+		return btnDesconectar;
+	}
+
+	public void setBtnDesconectar(JButton btnDesconectar) {
+		this.btnDesconectar = btnDesconectar;
+	}
+
+	public JButton getBtnConectar() {
+		return btnConectar;
+	}
+
+	public void setBtnConectar(JButton btnConectar) {
+		this.btnConectar = btnConectar;
 	}
 
 	/**

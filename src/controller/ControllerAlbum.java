@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -58,7 +59,15 @@ public class ControllerAlbum {
 		view.addBtnLimpar(new LimpaActionListener());
 		view.addClickListener(new ClickListenerList());
 		view.addBtnBusca(new BuscaListener());
-
+		view.addWindowlistenerClose(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				if (!view.getBtnConectar().isEnabled()) {
+					view.getBtnDesconectar().doClick();
+				}
+				e.getWindow().dispose();
+			}
+		});
 	}
 
 	/**
@@ -87,7 +96,7 @@ public class ControllerAlbum {
 					int count = 0;
 					while (count < 120) {
 						try {
-							if ((node.getDht().isConnected() && node.getDht().isInserted()) || node.getDht().isStoped()	
+							if ((node.getDht().isConnected() && node.getDht().isInserted()) || node.getDht().isStoped()
 									|| node.getDht().isFounded() || node.getDht().isNotFounded())
 								break;
 							view.getLblStatusDaImagem().setText(node.getDht().getStatus());
@@ -98,27 +107,26 @@ public class ControllerAlbum {
 							break;
 						}
 					}
-					
+
 					try {
-						if(node.getDht().isFounded()) {
+						if (node.getDht().isFounded()) {
 							view.getLblStatusDaImagem().setText("Imagem encontrada!");
 							Picture pic = (Picture) node.deserialize(node.getDht().getResult());
 							view.setImg(new ImageIcon(pic.getImg()));
 							view.getBtnLimpar().setEnabled(true);
-						}else {
+						} else {
 							view.getLblStatusDaImagem().setText("Imagem não encontrada.");
-							JOptionPane.showMessageDialog(view.getContentPane(), 
-									"Imagem não encontrada. ", // mensagem
+							JOptionPane.showMessageDialog(view.getContentPane(), "Imagem não encontrada. ", // mensagem
 									"Busca sem resultado", // titulo da janela
 									JOptionPane.INFORMATION_MESSAGE);
 						}
-					} catch (RemoteException e) {						
-						JOptionPane.showMessageDialog(view.getContentPane(), 
+					} catch (RemoteException e) {
+						JOptionPane.showMessageDialog(view.getContentPane(),
 								"Erro ao Carregar Imagem: " + e.getMessage(), // mensagem
 								"Error: Carregar resultado da busca.", // titulo da janela
 								JOptionPane.ERROR_MESSAGE);
 					} catch (IOException e) {
-						JOptionPane.showMessageDialog(view.getContentPane(), 
+						JOptionPane.showMessageDialog(view.getContentPane(),
 								"Erro ao Carregar Imagem: " + e.getMessage(), // mensagem
 								"Error: Carregar resultado da busca.", // titulo da janela
 								JOptionPane.ERROR_MESSAGE);
@@ -126,7 +134,7 @@ public class ControllerAlbum {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					
+
 				}).start();
 
 			} catch (RemoteException | NotBoundException e) {
@@ -338,6 +346,7 @@ public class ControllerAlbum {
 					view.getTextFieldImageName().setEditable(true);
 					view.getBtnCalchash().setEnabled(true);
 				} catch (ConnectException e1) {
+					view.setBtnDesconecta(false);
 					JOptionPane.showMessageDialog(view.getContentPane(),
 							"Erro ao iniciar conexão: " + e1.getMessage() + "\n Tente (re)iniciar o rmiregistry ", // mensagem
 							"Error: join DHT", // titulo da janela
@@ -350,6 +359,7 @@ public class ControllerAlbum {
 					}
 					e1.printStackTrace();
 				} catch (AlreadyBoundException e1) {
+					view.setBtnDesconecta(false);
 					JOptionPane.showMessageDialog(view.getContentPane(),
 							"Erro ao conectar à rede DHT: Nó já está registrado.\n" + e1.getMessage(), // mensagem
 							"Error: join DHT", // titulo da janela
@@ -374,6 +384,7 @@ public class ControllerAlbum {
 					}
 					e1.printStackTrace();
 				} catch (IOException e1) {
+					view.setBtnDesconecta(false);
 					JOptionPane.showMessageDialog(view.getContentPane(),
 							"Erro ao ler o arquivo inicial: " + e1.getMessage(), // mensagem
 							"Error: join DHT", // titulo da janela
@@ -408,6 +419,9 @@ public class ControllerAlbum {
 				JOptionPane.showMessageDialog(view.getContentPane(), "Erro ao desconectar à rede DHT ", // mensagem
 						"Error: leave DHT", // titulo da janela
 						JOptionPane.ERROR_MESSAGE);
+				e1.printStackTrace();
+			} catch (NotBoundException e1) {
+				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		}
@@ -502,11 +516,10 @@ public class ControllerAlbum {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			try {
-				if(!view.getTextFieldImageName().getText().isEmpty())
+				if (!view.getTextFieldImageName().getText().isEmpty())
 					picture.setId(SHA1.digest(view.getTextFieldImageName().getText()));
 				else
-					JOptionPane.showMessageDialog(view.getContentPane(), 
-							"Erro ao criar hash: Campo nome está vazio", // mensagem
+					JOptionPane.showMessageDialog(view.getContentPane(), "Erro ao criar hash: Campo nome está vazio", // mensagem
 							"Error: hash", // titulo da janela
 							JOptionPane.ERROR_MESSAGE);
 			} catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {

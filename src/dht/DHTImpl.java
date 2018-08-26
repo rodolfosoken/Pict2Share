@@ -12,6 +12,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Map.Entry;
 
 /**
  * Classe que implementa os métodos da DHT.
@@ -42,11 +43,13 @@ public class DHTImpl implements DHT {
 		isConnected = false;
 		isInserted = false;
 		isStoped = false;
-		isRemote=false;
+		isRemote = false;
 		result = null;
 		isFounded = false;
 		isNotFounded = false;
 	}
+
+	
 
 	@Override
 	public String join(String path) throws IOException, ConnectException, AlreadyBoundException {
@@ -73,18 +76,18 @@ public class DHTImpl implements DHT {
 								+ ipPortName[1];
 						System.out.println(status);
 						isConnected = true;
-						if(!ipPortName[0].equals("127.0.0.1")) 
+						if (!ipPortName[0].equals("127.0.0.1"))
 							isRemote = true;
 						else
 							isRemote = false;
-						
+
 						// Adiciona os atributos no nó
 						// e realiza o registro do nó no RMI
 						node.setIp(ipPortName[0]);
 						DHT stub = (DHT) UnicastRemoteObject.exportObject(this, Integer.parseInt(node.getPort()));
 						registryLocal = LocateRegistry.getRegistry();
 						registryLocal.bind(node.getId(), stub);
-						if(isRemote)
+						if (isRemote)
 							dhtStub.bindDHT(node.getId(), stub);
 
 						// cria e envia a mensagem de join
@@ -96,11 +99,11 @@ public class DHTImpl implements DHT {
 						dhtStub.procMessage(msgJoin);
 						break;
 					} catch (RemoteException e) {
-						if(!(e instanceof ConnectException)) {
+						if (!(e instanceof ConnectException)) {
 							status = e.getLocalizedMessage();
 							System.out.println(node.getId() + ": " + e.getLocalizedMessage());
 							e.printStackTrace();
-						}else
+						} else
 							System.out.println(e.getMessage());
 					} catch (NotBoundException e) {
 
@@ -122,43 +125,65 @@ public class DHTImpl implements DHT {
 				isInserted = true;
 				isStoped = false;
 			}
-			
-			if(!isRemote)
+
+			if (!isRemote)
 				registryRemote = registryLocal;
 
 		}
 		return node.getIp() + ":" + node.getPort();
 	}
-	
+
 	@Override
 	public void bindDHT(String id, DHT stub) throws AccessException, RemoteException, AlreadyBoundException {
 		registryLocal.bind(id, stub);
 	}
+
 	@Override
-	public void leave() {
-		try {
-			UnicastRemoteObject.unexportObject(this, true);
-			if(isRemote)
-				registryRemote.unbind(node.getId());
-			registryLocal.unbind(node.getId());
-			isConnected = false;
-			isStoped = true;
-		} catch (RemoteException | NotBoundException e) {
+	public void leave() throws RemoteException, NotBoundException {
+
+		Message msgLeave = new Message(TypeMessage.LEAVE);
+		msgLeave.setSource(node.toString());
+
+		Message msgGone = new Message(TypeMessage.NODE_GONE);
+		msgGone.setSource(node.toString());
+
+		if (getPrev() != null && getNext() != null) {
+			msgLeave.setArgs(getPrev().getNode().toString());
+			System.out.println(node.getId() + ": Enviando LEAVE para..." + getNext().getIdNode());
+			getNext().procMessage(msgLeave);
+
+			for (Entry<String, byte[]> data : node.getData().entrySet()) {
+				Message msgTransfer = new Message(TypeMessage.TRANSFER);
+				msgTransfer.setSource(node.toString());
+				msgTransfer.setArgs(data.getKey());
+				msgTransfer.setData(data.getValue());
+				getNext().procMessage(msgTransfer);
+			}
+			msgGone.setArgs(getNext().getNode().toString());
+			System.out.println(node.getId() + ": Enviando NODE_GONE para..." + getPrev().getIdNode());
+			getPrev().procMessage(msgGone);
+
 		}
+		
+		UnicastRemoteObject.unexportObject(this, true);
+		if (isRemote)
+			registryRemote.unbind(node.getId());
+		registryLocal.unbind(node.getId());
+		isConnected = false;
+		isStoped = true;
 	}
 
 	@Override
 	public boolean store(String key, byte[] data) throws RemoteException, NotBoundException {
-		BigInteger keyStore = new BigInteger(key,16), 
-				thisNode = new BigInteger(node.getId(),16);
+		BigInteger keyStore = new BigInteger(key, 16), thisNode = new BigInteger(node.getId(), 16);
 		Message msg = new Message(TypeMessage.STORE);
 		msg.setDest(key);
 		msg.setSource(node.toString());
 		msg.setData(data);
-		System.out.println(node.getId()+": Enviando STORE.");
-		if(keyStore.compareTo(thisNode) < 0 && getPrev() != null)
+		System.out.println(node.getId() + ": Enviando STORE.");
+		if (keyStore.compareTo(thisNode) < 0 && getPrev() != null)
 			getPrev().procMessage(msg);
-		else if(getNext() !=null)
+		else if (getNext() != null)
 			getNext().procMessage(msg);
 		else
 			procMessage(msg);
@@ -166,18 +191,17 @@ public class DHTImpl implements DHT {
 	}
 
 	@Override
-	public void retrieve(String key) throws RemoteException, NotBoundException{
+	public void retrieve(String key) throws RemoteException, NotBoundException {
 		isFounded = false;
 		isNotFounded = false;
-		BigInteger keyStore = new BigInteger(key,16), 
-				thisNode = new BigInteger(node.getId(),16);
+		BigInteger keyStore = new BigInteger(key, 16), thisNode = new BigInteger(node.getId(), 16);
 		Message msg = new Message(TypeMessage.RETRIEVE);
 		msg.setDest(key);
 		msg.setSource(node.toString());
-		System.out.println(node.getId()+": Enviando RETRIEVE.");
-		if(keyStore.compareTo(thisNode) < 0 && getPrev() != null)
+		System.out.println(node.getId() + ": Enviando RETRIEVE.");
+		if (keyStore.compareTo(thisNode) < 0 && getPrev() != null)
 			getPrev().procMessage(msg);
-		else if(getNext() !=null)
+		else if (getNext() != null)
 			getNext().procMessage(msg);
 		else
 			procMessage(msg);
@@ -188,18 +212,19 @@ public class DHTImpl implements DHT {
 		switch (msg.getType()) {
 		case JOIN:
 			System.out.println(node.getId() + " : JOIN recebido.");
-			BigInteger src = new BigInteger(msg.getSource().split(";")[2],16);
-			BigInteger idPrev = new BigInteger("0",16), thisNode = new BigInteger(node.getId(),16);
+			BigInteger src = new BigInteger(msg.getSource().split(";")[2], 16);
+			BigInteger idPrev = new BigInteger("0", 16), thisNode = new BigInteger(node.getId(), 16);
 			if (getPrev() != null)
-				idPrev = new BigInteger(getPrev().getIdNode(),16);
+				idPrev = new BigInteger(getPrev().getIdNode(), 16);
 			if (idPrev.compareTo(src) < 0 || (thisNode.compareTo(idPrev) < 0)) { // se o anterior for maior que este nó,
-														// então este é o sucessor do último,
-														// e deve-se proceder com a inserção
-				if (src.compareTo(thisNode) <= 0 || getNext() == null || (thisNode.compareTo(idPrev) < 0 && src.compareTo(idPrev) > 0)) {
-					System.out.println(node.getId() + " : JOIN Adicionando: " + msg.getSource().split(";")[2]+"...");
+				// então este é o sucessor do último,
+				// e deve-se proceder com a inserção
+				if (src.compareTo(thisNode) <= 0 || getNext() == null
+						|| (thisNode.compareTo(idPrev) < 0 && src.compareTo(idPrev) > 0)) {
+					System.out.println(node.getId() + " : JOIN Adicionando: " + msg.getSource().split(";")[2] + "...");
 					Message resp = new Message(TypeMessage.JOIN_OK);
 					resp.setSource(node.toString());
-					if (node.getPrev() != null) 
+					if (node.getPrev() != null)
 						resp.setArgs(getPrev().getNode().toString());
 					else
 						resp.setArgs(getNode().toString());
@@ -244,22 +269,24 @@ public class DHTImpl implements DHT {
 		case NEW_NODE:
 			System.out.println(node.getId() + ": NEW_NODE recebida.");
 			DHT nodeSrc2 = (DHT) registryRemote.lookup(msg.getSource().split(";")[2]);
-			node.setNext(nodeSrc2);			
+			node.setNext(nodeSrc2);
 			System.out.println(node.getId() + ": next : " + node.getNext().getIdNode());
 			break;
 		case STORE:
-			System.out.println(node.getId()+": STORE recebida.");
-			BigInteger keyStore3 = new BigInteger(msg.getDest(),16), 
-					idCurrentNode3 = new BigInteger(node.getId(),16),
-					idPrev3 = new BigInteger("0",16);
+			System.out.println(node.getId() + ": STORE recebida.");
+			BigInteger keyStore3 = new BigInteger(msg.getDest(), 16), idCurrentNode3 = new BigInteger(node.getId(), 16),
+					idPrev3 = new BigInteger("0", 16);
 			if (getPrev() != null)
-				idPrev3 = new BigInteger(getPrev().getIdNode(),16);
-			if (idPrev3.compareTo(keyStore3) < 0 || (idCurrentNode3.compareTo(idPrev3) < 0)) { // se o anterior for maior que este nó,
-														// então este é o sucessor do último,
-														// e deve-se proceder com a inserção
-				if (keyStore3.compareTo(idCurrentNode3) <= 0 || getNext() == null || (idCurrentNode3.compareTo(idPrev3) < 0 && keyStore3.compareTo(idPrev3) > 0)) {
-					System.out.println(node.getId() + " : STORE salvando img de: " + msg.getSource().split(";")[2]+"...");
-					node.getData().put(msg.getDest(), msg.getData());					
+				idPrev3 = new BigInteger(getPrev().getIdNode(), 16);
+			if (idPrev3.compareTo(keyStore3) < 0 || (idCurrentNode3.compareTo(idPrev3) < 0)) { // se o anterior for
+																								// maior que este nó,
+				// então este é o sucessor do último,
+				// e deve-se proceder com a inserção
+				if (keyStore3.compareTo(idCurrentNode3) <= 0 || getNext() == null
+						|| (idCurrentNode3.compareTo(idPrev3) < 0 && keyStore3.compareTo(idPrev3) > 0)) {
+					System.out.println(
+							node.getId() + " : STORE salvando img de: " + msg.getSource().split(";")[2] + "...");
+					node.getData().put(msg.getDest(), msg.getData());
 				} else {
 					// se o src (nó ingressante) é maior que este
 					// nó, então passar para o próximo nó
@@ -273,40 +300,44 @@ public class DHTImpl implements DHT {
 				System.out.println(node.getId() + " : STORE repassado ao anterior.");
 				this.node.getPrev().procMessage(msg);
 			}
-			
-			
+
 			break;
 		case LEAVE:
 			System.out.println(node.getId() + ": LEAVE recebida.");
+			DHT st = (DHT) registryRemote.lookup(msg.getArgs().split(";")[2]);
+			node.setPrev(st);
+			System.out.println(node.getId() + ": prev.: " + getPrev().getIdNode());
+
 			break;
 		case RETRIEVE:
 			System.out.println(node.getId() + ": RETRIEVE recebida.");
-			BigInteger keyStore5 = new BigInteger(msg.getDest(),16), 
-					idCurrentNode5 = new BigInteger(node.getId(),16),
+			BigInteger keyStore5 = new BigInteger(msg.getDest(), 16), idCurrentNode5 = new BigInteger(node.getId(), 16),
 					idPrev5 = new BigInteger("0");
 			if (getPrev() != null)
-				idPrev5 = new BigInteger(getPrev().getIdNode(),16);
-			if (idPrev5.compareTo(keyStore5) < 0 || (idCurrentNode5.compareTo(idPrev5) < 0)) { // se o anterior for maior que este nó,
-														// então este é o sucessor do último,
-														// e deve-se proceder com a inserção
-				if (keyStore5.compareTo(idCurrentNode5) <= 0 || getNext() == null || (idCurrentNode5.compareTo(idPrev5) < 0 && keyStore5.compareTo(idPrev5) > 0)) {
-					
-					//procura a imagem dentro do nó
+				idPrev5 = new BigInteger(getPrev().getIdNode(), 16);
+			if (idPrev5.compareTo(keyStore5) < 0 || (idCurrentNode5.compareTo(idPrev5) < 0)) { // se o anterior for
+																								// maior que este nó,
+				// então este é o sucessor do último,
+				// e deve-se proceder com a inserção
+				if (keyStore5.compareTo(idCurrentNode5) <= 0 || getNext() == null
+						|| (idCurrentNode5.compareTo(idPrev5) < 0 && keyStore5.compareTo(idPrev5) > 0)) {
+
+					// procura a imagem dentro do nó
 					byte[] result = node.getData().get(msg.getDest());
 					DHT respStub = (DHT) registryRemote.lookup(msg.getSource().split(";")[2]);
-					
-					if(result != null) {//se a imagem foi encontrada responder ok
+
+					if (result != null) {// se a imagem foi encontrada responder ok
 						System.out.println(node.getId() + " : RETRIEVE img encontrada.");
 						Message okResp = new Message(TypeMessage.OK);
 						okResp.setSource(node.toString());
 						okResp.setData(result);
 						respStub.procMessage(okResp);
-					}else { //se não foi encontrada então Not_found
+					} else { // se não foi encontrada então Not_found
 						System.out.println(node.getId() + " : RETRIEVE: NOT_FOUND.");
 						Message not = new Message(TypeMessage.NOT_FOUND);
 						respStub.procMessage(not);
 					}
-						
+
 				} else {
 					// se o src (nó ingressante) é maior que este
 					// nó, então passar para o próximo nó
@@ -323,6 +354,11 @@ public class DHTImpl implements DHT {
 			break;
 		case NODE_GONE:
 			System.out.println(node.getId() + ": NODE_GONE recebida.");
+			if (getNext() != null) {
+				DHT st2 = (DHT) registryRemote.lookup(msg.getArgs().split(";")[2]);
+				node.setNext(st2);
+				System.out.println(node.getId() + ": next atualizado para: " + getNext().getIdNode());
+			}
 			break;
 		case OK:
 			System.out.println(node.getId() + ": OK recebida.");
@@ -338,6 +374,8 @@ public class DHTImpl implements DHT {
 			break;
 		case TRANSFER:
 			System.out.println(node.getId() + ": TRANSFER recebida.");
+			node.getData().put(msg.getArgs(), msg.getData());
+			System.out.println(node.getId() + ": " + msg.getArgs() + " armazenada em " + node.getId());
 			break;
 
 		default:
@@ -411,10 +449,12 @@ public class DHTImpl implements DHT {
 	public DHT getPrev() throws RemoteException {
 		return node.getPrev();
 	}
+
 	@Override
 	public byte[] getResult() {
 		return result;
 	}
+
 	@Override
 	public void setResult(byte[] result) {
 		this.result = result;
@@ -429,18 +469,15 @@ public class DHTImpl implements DHT {
 	public void setFounded(boolean isFounded) {
 		this.isFounded = isFounded;
 	}
-	
+
 	@Override
 	public boolean isNotFounded() {
 		return isNotFounded;
 	}
-	
+
 	@Override
 	public void setNotFounded(boolean isNotFounded) {
 		this.isNotFounded = isNotFounded;
 	}
-	
-		
-	
 
 }

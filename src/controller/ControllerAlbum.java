@@ -61,6 +61,7 @@ public class ControllerAlbum {
 		view.addClickListener(new ClickListenerList());
 		view.addBtnBusca(new BuscaListener());
 		view.getBtnFile().addActionListener(new InitFileChooserAction());
+		view.getTextFieldPath().setText(System.getProperty("user.dir")+"\\initxt.txt");
 		view.addWindowlistenerClose(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {

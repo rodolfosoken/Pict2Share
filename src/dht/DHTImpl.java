@@ -37,6 +37,7 @@ public class DHTImpl implements DHT {
 	private boolean isRemote;
 	private boolean isFounded;
 	private boolean isNotFounded;
+	private boolean isSuperNode;
 	private DHT dhtStub;
 
 	public DHTImpl(Node node) {
@@ -49,6 +50,7 @@ public class DHTImpl implements DHT {
 		result = null;
 		isFounded = false;
 		isNotFounded = false;
+		isSuperNode =false;
 	}
 
 	
@@ -126,6 +128,7 @@ public class DHTImpl implements DHT {
 				isConnected = true;
 				isInserted = true;
 				isStoped = false;
+				isSuperNode = true;
 			}
 
 			if (!isRemote)
@@ -164,6 +167,7 @@ public class DHTImpl implements DHT {
 				msgTransfer.setSource(node.toString());
 				msgTransfer.setArgs(data.getKey());
 				msgTransfer.setData(data.getValue());
+				System.out.println(node.getId() + ": Enviando TRANSFER para..." + getNext().getIdNode());
 				getNext().procMessage(msgTransfer);
 			}
 			node.setData(new HashMap<>());
@@ -179,6 +183,7 @@ public class DHTImpl implements DHT {
 		registryLocal.unbind(node.getId());
 		isConnected = false;
 		isStoped = true;
+		isSuperNode=false;
 	}
 
 	@Override
@@ -487,5 +492,19 @@ public class DHTImpl implements DHT {
 	public void setNotFounded(boolean isNotFounded) {
 		this.isNotFounded = isNotFounded;
 	}
+
+
+	@Override
+	public boolean isSuperNode() {
+		return isSuperNode;
+	}
+
+
+	@Override
+	public void setSuperNode(boolean isSuperNode) {
+		this.isSuperNode = isSuperNode;
+	}
+	
+	
 
 }

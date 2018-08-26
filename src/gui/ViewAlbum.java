@@ -7,7 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.AbstractListModel;
@@ -275,6 +274,10 @@ public class ViewAlbum extends JFrame {
 		lblStatusDaImagem.setBounds(111, 86, 242, 26);
 		contentPane.add(lblStatusDaImagem);
 				
+	}
+	
+	public void doNothingOnClosing() {
+		this.setDefaultCloseOperation (JFrame.DO_NOTHING_ON_CLOSE);
 	}
 	
 	public void addWindowlistenerClose (WindowAdapter adapter) {

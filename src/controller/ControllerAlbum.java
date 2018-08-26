@@ -1,5 +1,6 @@
 package controller;
 
+import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -62,10 +63,31 @@ public class ControllerAlbum {
 		view.addWindowlistenerClose(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				if (!view.getBtnConectar().isEnabled()) {
-					view.getBtnDesconectar().doClick();
+				try {
+					
+					if (node.getDht().isSuperNode() && JOptionPane.showConfirmDialog(null,
+							"Este é o nó de referência. " + "Finalize este nó por último.\n "
+									+ "Outros nós procuram por este nó para se conectarem, deseja mesmo finaliza-lo?",
+							"WARNING", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+						
+						if (!view.getBtnConectar().isEnabled()) {
+							view.getBtnDesconectar().doClick();
+						}
+						e.getWindow().dispose();
+					} else {
+						if (node.getDht().isSuperNode()) {
+							view.doNothingOnClosing();
+						}else {
+						if (!view.getBtnConectar().isEnabled()) {
+							view.getBtnDesconectar().doClick();
+						}
+						e.getWindow().dispose();
+						}
+					}
+				} catch (HeadlessException | RemoteException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
-				e.getWindow().dispose();
 			}
 		});
 	}
@@ -415,6 +437,12 @@ public class ControllerAlbum {
 				view.setStatus("Desconectado.");
 				view.setBtnDesconecta(false);
 				view.setBtnConectar(true);
+				updateTextFields();
+				view.getBtnAtualizar().setEnabled(false);
+				view.getBtnBuscar().setEnabled(false);
+				view.getBtnCarregar().setEnabled(false);
+				view.getBtnCalchash().setEnabled(false);
+
 			} catch (RemoteException e1) {
 				JOptionPane.showMessageDialog(view.getContentPane(), "Erro ao desconectar à rede DHT ", // mensagem
 						"Error: leave DHT", // titulo da janela

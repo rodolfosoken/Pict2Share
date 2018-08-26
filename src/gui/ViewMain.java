@@ -72,18 +72,18 @@ public class ViewMain extends JFrame {
 		
 		lblPorta = new JLabel("IP / Porta");
 		lblPorta.setToolTipText("IP / Porta");
-		lblPorta.setBounds(5, 36, 94, 14);
+		lblPorta.setBounds(5, 39, 94, 20);
 		contentPane.add(lblPorta);
 		
 		txtHash = new JTextField();
 		txtHash.setText("Hash");
-		txtHash.setBounds(111, 8, 211, 20);
+		txtHash.setBounds(111, 8, 211, 22);
 		contentPane.add(txtHash);
 		txtHash.setColumns(10);
 		
 		txtPorta = new JTextField();
 		txtPorta.setText("1099");
-		txtPorta.setBounds(236, 33, 86, 20);
+		txtPorta.setBounds(236, 36, 86, 23);
 		contentPane.add(txtPorta);
 		txtPorta.setColumns(10);
 		
@@ -94,7 +94,7 @@ public class ViewMain extends JFrame {
 		
 		txtIp = new JTextField();
 		txtIp.setText("127.0.0.1");
-		txtIp.setBounds(110, 33, 116, 20);
+		txtIp.setBounds(110, 36, 116, 23);
 		contentPane.add(txtIp);
 		txtIp.setColumns(10);
 	}

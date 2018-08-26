@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.net.Inet4Address;
 import java.rmi.AccessException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.ConnectException;
@@ -61,6 +60,8 @@ public class DHTImpl implements DHT {
 		isConnected = false;
 		isInserted = false;
 		isStoped = false;
+
+		System.setProperty("java.rmi.server.hostname",node.getIp());
 		try (BufferedReader br = new BufferedReader(new FileReader(path))) {
 			String line = br.readLine();
 			String ipPortName[] = null;
@@ -120,7 +121,6 @@ public class DHTImpl implements DHT {
 			// Não conseguiu conectar com nenhum nó no arquivo txt
 			// irá criar o nó inicial
 			if (isConnected == false) {
-				System.setProperty("java.rmi.server.hostname",node.getIp());
 				registryLocal = LocateRegistry.getRegistry();
 				DHT stub = (DHT) UnicastRemoteObject.exportObject(this, 0);
 				registryLocal.bind(node.getId(), stub);

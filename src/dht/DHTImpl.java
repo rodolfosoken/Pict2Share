@@ -34,6 +34,7 @@ public class DHTImpl implements DHT {
 	private boolean isStoped;
 	private boolean isRemote;
 	private boolean isFounded;
+	private boolean isNotFounded;
 
 	public DHTImpl(Node node) {
 		this.node = node;
@@ -44,6 +45,7 @@ public class DHTImpl implements DHT {
 		isRemote=false;
 		result = null;
 		isFounded = false;
+		isNotFounded = false;
 	}
 
 	@Override
@@ -166,6 +168,7 @@ public class DHTImpl implements DHT {
 	@Override
 	public void retrieve(String key) throws RemoteException, NotBoundException {
 		isFounded = false;
+		isNotFounded = false;
 		BigInteger keyStore = new BigInteger(key,16), 
 				thisNode = new BigInteger(node.getId());
 		Message msg = new Message(TypeMessage.RETRIEVE);
@@ -326,9 +329,12 @@ public class DHTImpl implements DHT {
 			status = "Imagem encontrada.";
 			result = msg.getData();
 			isFounded = true;
+			isNotFounded = false;
 			break;
 		case NOT_FOUND:
 			System.out.println(node.getId() + ": NOT_FOUND recebida.");
+			isFounded = false;
+			isNotFounded = true;
 			break;
 		case TRANSFER:
 			System.out.println(node.getId() + ": TRANSFER recebida.");
@@ -424,6 +430,17 @@ public class DHTImpl implements DHT {
 		this.isFounded = isFounded;
 	}
 	
+	@Override
+	public boolean isNotFounded() {
+		return isNotFounded;
+	}
+	
+	@Override
+	public void setNotFounded(boolean isNotFounded) {
+		this.isNotFounded = isNotFounded;
+	}
+	
+		
 	
 
 }

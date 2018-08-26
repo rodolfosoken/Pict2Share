@@ -141,4 +141,18 @@ public interface DHT extends Remote{
 	 * @throws RemoteException
 	 */
 	public void setFounded(boolean isFounded) throws RemoteException;
+	
+	/**
+	 * 
+	 * @return
+	 * @throws RemoteException
+	 */
+	public boolean isNotFounded() throws RemoteException;
+
+	/**
+	 * 
+	 * @param isNotFounded
+	 * @throws RemoteException
+	 */
+	public void setNotFounded(boolean isNotFounded) throws RemoteException;
 }

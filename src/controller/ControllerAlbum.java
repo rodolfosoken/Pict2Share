@@ -78,6 +78,8 @@ public class ControllerAlbum {
 
 				key = view.getTxtHashImg();
 
+				node.getDht().setFounded(false);
+				node.getDht().setNotFounded(false);
 				node.getDht().retrieve(key);
 				view.getLblStatusDaImagem().setText("Buscando Imagem...");
 
@@ -85,8 +87,8 @@ public class ControllerAlbum {
 					int count = 0;
 					while (count < 120) {
 						try {
-							if ((node.getDht().isConnected() && node.getDht().isInserted()) || node.getDht().isStoped()
-									|| node.getDht().isFounded())
+							if ((node.getDht().isConnected() && node.getDht().isInserted()) || node.getDht().isStoped()	
+									|| node.getDht().isFounded() || node.getDht().isNotFounded())
 								break;
 							view.getLblStatusDaImagem().setText(node.getDht().getStatus());
 							count++;
@@ -98,11 +100,18 @@ public class ControllerAlbum {
 					}
 					
 					try {
-						if(node.getDht().isFounded())
+						if(node.getDht().isFounded()) {
 							view.getLblStatusDaImagem().setText("Imagem encontrada!");
 							Picture pic = (Picture) node.deserialize(node.getDht().getResult());
 							view.setImg(new ImageIcon(pic.getImg()));
 							view.getBtnLimpar().setEnabled(true);
+						}else {
+							view.getLblStatusDaImagem().setText("Imagem não encontrada.");
+							JOptionPane.showMessageDialog(view.getContentPane(), 
+									"Imagem não encontrada. ", // mensagem
+									"Busca sem resultado", // titulo da janela
+									JOptionPane.INFORMATION_MESSAGE);
+						}
 					} catch (RemoteException e) {						
 						JOptionPane.showMessageDialog(view.getContentPane(), 
 								"Erro ao Carregar Imagem: " + e.getMessage(), // mensagem
@@ -262,6 +271,7 @@ public class ControllerAlbum {
 
 		@Override
 		public void windowLostFocus(WindowEvent e) {
+			updateTextFields();
 		}
 	}
 

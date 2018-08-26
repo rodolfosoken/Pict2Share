@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.FileSystems;
 import java.rmi.AlreadyBoundException;
 import java.rmi.ConnectException;
 import java.rmi.NotBoundException;
@@ -61,7 +62,7 @@ public class ControllerAlbum {
 		view.addClickListener(new ClickListenerList());
 		view.addBtnBusca(new BuscaListener());
 		view.getBtnFile().addActionListener(new InitFileChooserAction());
-		view.getTextFieldPath().setText(System.getProperty("user.dir")+"\\initxt.txt");
+		view.getTextFieldPath().setText(FileSystems.getDefault().getPath("initxt.txt").toString());
 		view.addWindowlistenerClose(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {

@@ -63,6 +63,7 @@ public class ViewAlbum extends JFrame {
 	private JScrollPane scrollPane;
 	private JLabel lblStatImg;
 	private JLabel lblStatusDaImagem;
+	private JButton btnFile;
 
 	/**
 	 * Launch the application.
@@ -177,13 +178,13 @@ public class ViewAlbum extends JFrame {
 		btnConectar = new JButton("Conectar");
 		btnConectar.setToolTipText("Tenta se conectar à DHT lendo os IP no arquivo inicial.");
 		
-		btnConectar.setBounds(312, 13, 117, 23);
+		btnConectar.setBounds(363, 14, 117, 23);
 		contentPane.add(btnConectar);
 		
 		btnDesconectar = new JButton("Desconectar");
 		btnDesconectar.setToolTipText("Sai da DHT");
 		btnDesconectar.setEnabled(false);
-		btnDesconectar.setBounds(446, 13, 117, 23);
+		btnDesconectar.setBounds(497, 14, 117, 23);
 		contentPane.add(btnDesconectar);
 		
 		JLabel lblVisualizaoDaImagem = new JLabel("Visualização da Imagem:");
@@ -273,6 +274,11 @@ public class ViewAlbum extends JFrame {
 		lblStatusDaImagem.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblStatusDaImagem.setBounds(111, 86, 242, 26);
 		contentPane.add(lblStatusDaImagem);
+		
+		btnFile = new JButton("...");
+		btnFile.setToolTipText("Escolha o arquivo texto inicial");
+		btnFile.setBounds(313, 13, 26, 23);
+		contentPane.add(btnFile);
 				
 	}
 	
@@ -503,4 +509,22 @@ public class ViewAlbum extends JFrame {
 	public void setBtnLimpar(JButton btnLimpar) {
 		this.btnLimpar = btnLimpar;
 	}
+
+	public JButton getBtnFile() {
+		return btnFile;
+	}
+
+	public void setBtnFile(JButton btnFile) {
+		this.btnFile = btnFile;
+	}
+
+	public JTextField getTextFieldPath() {
+		return textFieldPath;
+	}
+
+	public void setTextFieldPath(JTextField textFieldPath) {
+		this.textFieldPath = textFieldPath;
+	}
+	
+	
 }

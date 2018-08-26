@@ -60,6 +60,7 @@ public class ControllerAlbum {
 		view.addBtnLimpar(new LimpaActionListener());
 		view.addClickListener(new ClickListenerList());
 		view.addBtnBusca(new BuscaListener());
+		view.getBtnFile().addActionListener(new InitFileChooserAction());
 		view.addWindowlistenerClose(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -90,6 +91,24 @@ public class ControllerAlbum {
 				}
 			}
 		});
+	}
+	
+	class InitFileChooserAction implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			JFileChooser jf = new JFileChooser();
+			jf.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			FileNameExtensionFilter filter = new FileNameExtensionFilter("Arquivo de texto", "txt", "text");
+			jf.setFileFilter(filter);
+			jf.setCurrentDirectory(new java.io.File("."));
+			int status = jf.showOpenDialog(view.getContentPane());
+			if (status == JFileChooser.APPROVE_OPTION) {
+				view.getTextFieldPath().setText(jf.getSelectedFile().getPath());
+			}
+			
+		}
+		
 	}
 
 	/**

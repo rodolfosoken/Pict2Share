@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
@@ -19,6 +20,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
@@ -58,6 +60,10 @@ public class ViewAlbum extends JFrame {
 	private JTextField txtHashimg;
 	private JLabel lblHashDaImagem;
 	private JButton btnCalchash;
+	private JButton btnLimpar;
+	private JScrollPane scrollPane;
+	private JLabel lblStatImg;
+	private JLabel lblStatusDaImagem;
 
 	/**
 	 * Launch the application.
@@ -150,7 +156,7 @@ public class ViewAlbum extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 			}
 		});
-		btnBuscar.setBounds(694, 90, 98, 23);
+		btnBuscar.setBounds(694, 125, 98, 23);
 		contentPane.add(btnBuscar);
 		
 		JLabel lblDht = new JLabel("Status da DHT :");
@@ -181,11 +187,6 @@ public class ViewAlbum extends JFrame {
 		lblVisualizaoDaImagem.setBounds(10, 119, 200, 29);
 		contentPane.add(lblVisualizaoDaImagem);
 		
-		list = new JList<Picture>();
-		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		list.setBounds(809, 252, 209, 297);
-		contentPane.add(list);
-		
 		lblImagensArmazenadosNeste = new JLabel("Dados armazenados neste nó:");
 		lblImagensArmazenadosNeste.setHorizontalAlignment(SwingConstants.CENTER);
 		lblImagensArmazenadosNeste.setFont(new Font("Tahoma", Font.PLAIN, 12));
@@ -208,7 +209,7 @@ public class ViewAlbum extends JFrame {
 		
 		txtPrevnode = new JTextField();
 		txtPrevnode.setEditable(false);
-		txtPrevnode.setBounds(828, 194, 173, 20);
+		txtPrevnode.setBounds(828, 187, 173, 20);
 		contentPane.add(txtPrevnode);
 		txtPrevnode.setColumns(10);
 		
@@ -234,8 +235,31 @@ public class ViewAlbum extends JFrame {
 		
 		btnCalchash = new JButton("Calc. Hash");
 		btnCalchash.setEnabled(false);
-		btnCalchash.setBounds(694, 125, 98, 23);
+		btnCalchash.setBounds(694, 89, 98, 23);
 		contentPane.add(btnCalchash);
+		
+		btnLimpar = new JButton("Limpar");
+		btnLimpar.setEnabled(false);
+		btnLimpar.setBounds(694, 561, 89, 23);
+		contentPane.add(btnLimpar);
+		
+		scrollPane = new JScrollPane();
+		scrollPane.setBounds(802, 241, 216, 319);
+		contentPane.add(scrollPane);
+		
+		list = new JList<Picture>();
+		scrollPane.setViewportView(list);
+		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
+		lblStatImg = new JLabel("Status Imagem:");
+		lblStatImg.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblStatImg.setBounds(10, 90, 113, 22);
+		contentPane.add(lblStatImg);
+		
+		lblStatusDaImagem = new JLabel("Sem Imagem.");
+		lblStatusDaImagem.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblStatusDaImagem.setBounds(111, 86, 242, 26);
+		contentPane.add(lblStatusDaImagem);
 		
 		
 		addWindowListener(new WindowAdapter()
@@ -250,6 +274,23 @@ public class ViewAlbum extends JFrame {
         });
 	}
 	
+	
+	public JLabel getLblStatusDaImagem() {
+		return lblStatusDaImagem;
+	}
+
+	public void setLblStatusDaImagem(JLabel lblStatusDaImagem) {
+		this.lblStatusDaImagem = lblStatusDaImagem;
+	}
+
+	public JList<Picture> getList() {
+		return list;
+	}
+
+	public void setList(JList<Picture> list) {
+		this.list = list;
+	}
+
 	public void addConectaListener(ActionListener action) {
 		btnConectar.addActionListener(action);
 	}
@@ -283,7 +324,9 @@ public class ViewAlbum extends JFrame {
 		btnCalchash.addActionListener(action);
 	}
 	
-
+	public void addClickListener(MouseListener action) {
+		list.addMouseListener(action);
+	}
 	
 	public JTextField getTextFieldImageName() {
 		return textFieldImageName;
@@ -300,6 +343,14 @@ public class ViewAlbum extends JFrame {
 
 	public void setTxtHashImg(String txt) {
 		this.txtHashimg.setText(txt);
+	}
+	
+	public void addBtnLimpar(ActionListener action) {
+		this.btnLimpar.addActionListener(action);
+	}
+	
+	public void addBtnBusca(ActionListener action) {
+		this.btnBuscar.addActionListener(action);
 	}
 
 	/**
@@ -418,8 +469,12 @@ public class ViewAlbum extends JFrame {
 	public void setTextFieldImageName(JTextField textFieldImageName) {
 		this.textFieldImageName = textFieldImageName;
 	}
-	
-	
-	
-	
+
+	public JButton getBtnLimpar() {
+		return btnLimpar;
+	}
+
+	public void setBtnLimpar(JButton btnLimpar) {
+		this.btnLimpar = btnLimpar;
+	}
 }

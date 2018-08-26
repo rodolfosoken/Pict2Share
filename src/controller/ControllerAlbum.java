@@ -2,6 +2,8 @@ package controller;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -12,7 +14,6 @@ import java.rmi.ConnectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.ExportException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,9 +26,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.xml.bind.DatatypeConverter;
 
 import dht.Node;
+import dht.SHA1;
 import gui.ViewAlbum;
 import model.Picture;
 
@@ -54,6 +55,83 @@ public class ControllerAlbum {
 		view.addAtualizaListener(new AtualizaListener());
 		view.addSalvaListener(new SalvaAction());
 		view.addBtnCalcHash(new HashNameImg());
+		view.addBtnLimpar(new LimpaActionListener());
+		view.addClickListener(new ClickListenerList());
+		view.addBtnBusca(new BuscaListener());
+
+	}
+
+	/**
+	 * Dispara uma busca na DHT
+	 */
+	class BuscaListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e2) {
+			try {
+				String key = "";
+				if (view.getTxtHashImg().isEmpty() && !view.getTextFieldImageName().getText().isEmpty())
+					view.getBtnCalchash().doClick();
+				else if (view.getTxtHashImg().isEmpty() && view.getTextFieldImageName().getText().isEmpty()) {
+					throw new IOException();
+				}
+
+				key = view.getTxtHashImg();
+
+				node.getDht().retrieve(key);
+				view.getLblStatusDaImagem().setText("Buscando Imagem...");
+
+				new Thread(() -> {
+					int count = 0;
+					while (count < 120) {
+						try {
+							if ((node.getDht().isConnected() && node.getDht().isInserted()) || node.getDht().isStoped()
+									|| node.getDht().isFounded())
+								break;
+							view.getLblStatusDaImagem().setText(node.getDht().getStatus());
+							count++;
+							Thread.sleep(1000);
+						} catch (InterruptedException e1) {
+						} catch (RemoteException e1) {
+							break;
+						}
+					}
+					
+					try {
+						if(node.getDht().isFounded())
+							view.getLblStatusDaImagem().setText("Imagem encontrada!");
+							Picture pic = (Picture) node.deserialize(node.getDht().getResult());
+							view.setImg(new ImageIcon(pic.getImg()));
+							view.getBtnLimpar().setEnabled(true);
+					} catch (RemoteException e) {						
+						JOptionPane.showMessageDialog(view.getContentPane(), 
+								"Erro ao Carregar Imagem: " + e.getMessage(), // mensagem
+								"Error: Carregar resultado da busca.", // titulo da janela
+								JOptionPane.ERROR_MESSAGE);
+					} catch (IOException e) {
+						JOptionPane.showMessageDialog(view.getContentPane(), 
+								"Erro ao Carregar Imagem: " + e.getMessage(), // mensagem
+								"Error: Carregar resultado da busca.", // titulo da janela
+								JOptionPane.ERROR_MESSAGE);
+					} catch (ClassNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				}).start();
+
+			} catch (RemoteException | NotBoundException e) {
+				JOptionPane.showMessageDialog(view.getContentPane(), "Erro ao Buscar Imagem: " + e.getMessage(), // mensagem
+						"Error: Buscar imagem", // titulo da janela
+						JOptionPane.ERROR_MESSAGE);
+				e.printStackTrace();
+			} catch (IOException e) {
+				JOptionPane.showMessageDialog(view.getContentPane(), "Erro : O campo ID não pode estar vazio", // mensagem
+						"Error: Buscar imagem", // titulo da janela
+						JOptionPane.ERROR_MESSAGE);
+			}
+		}
+
 	}
 
 	/**
@@ -64,20 +142,17 @@ public class ControllerAlbum {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			try {
-				
-				
+
 				byte[] data = node.serialize(picture);
-				
-				String inputName= view.getTextFieldImageName().getText(),
-						inputId = view.getTxtHashImg();
+
+				String inputName = view.getTextFieldImageName().getText(), inputId = view.getTxtHashImg();
 				picture.setId(inputId);
 				picture.setName(inputName);
 				node.getDht().store(picture.getId(), data);
-				
+
 				resetImg();
 				view.setImg(new ImageIcon("Imagem foi Salva."));
-				
-				
+
 			} catch (RemoteException e) {
 				JOptionPane.showMessageDialog(view.getContentPane(), "Erro ao Salvar Imagem: " + e.getMessage(), // mensagem
 						"Error: Salvar imagem", // titulo da janela
@@ -99,14 +174,59 @@ public class ControllerAlbum {
 
 	}
 
+	/**
+	 * Carrega uma imagem da lista ao clicar duas vezes.
+	 */
+	class ClickListenerList implements MouseListener {
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			if (e.getClickCount() == 2) {
+				picture = view.getList().getSelectedValue();
+
+				view.getBtnCalchash().setEnabled(true);
+				view.setTxtHashImg(picture.getId());
+				view.getTextFieldImageName().setText(picture.getName());
+				try {
+					view.setImg(new ImageIcon(picture.getImg()));
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				view.getBtnLimpar().setEnabled(true);
+			}
+
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+		}
+	}
+
+	/**
+	 * Reseta a imagem da tela
+	 */
 	public void resetImg() {
 		view.setImg(new ImageIcon("Imagem."));
 		view.getTextFieldImageName().setText("");
 		view.setTxtHashImg("");
 		view.setBtnSalvar(false);
-		view.getBtnCalchash().setEnabled(false);
+		// view.getBtnCalchash().setEnabled(false);
+		view.getBtnLimpar().setEnabled(false);
 		updateTextFields();
 	}
+
 	/**
 	 * Atualiza os atributos do nó na tela.
 	 */
@@ -206,6 +326,7 @@ public class ControllerAlbum {
 					view.getBtnBuscar().setEnabled(true);
 					view.getTxtHashimg().setEditable(true);
 					view.getTextFieldImageName().setEditable(true);
+					view.getBtnCalchash().setEnabled(true);
 				} catch (ConnectException e1) {
 					JOptionPane.showMessageDialog(view.getContentPane(),
 							"Erro ao iniciar conexão: " + e1.getMessage() + "\n Tente (re)iniciar o rmiregistry ", // mensagem
@@ -300,31 +421,46 @@ public class ControllerAlbum {
 				try {
 					bufferImg = ImageIO.read(file);
 					picture.setImg(Picture.imageToByteArray(bufferImg));
+					picture.setName(file.getName());
+					picture.setDate(new Date().toString());
+					picture.setId(SHA1.digest(picture.getName()));
 				} catch (IOException e1) {
 					JOptionPane.showMessageDialog(view.getContentPane(), "Erro ao carregar imagem.", // mensagem
 							"Imagem não foi carregada", // titulo da janela
 							JOptionPane.ERROR_MESSAGE);
 					e1.printStackTrace();
+				} catch (NoSuchAlgorithmException e1) {
+					JOptionPane.showMessageDialog(view.getContentPane(), "Erro ao criar hash: " + e1.getMessage(), // mensagem
+							"Error: hash", // titulo da janela
+							JOptionPane.ERROR_MESSAGE);
 				}
 
-				picture.setName(file.getName());
-				picture.setDate(new Date().toString());
-				picture.setId(sha1(picture.getName()));
-				
 				view.getBtnCalchash().setEnabled(true);
 				view.setTxtHashImg(picture.getId());
 				view.getTextFieldImageName().setText(picture.getName());
-				view.setImg(new ImageIcon(picture.getImg()));
+				try {
+					view.setImg(new ImageIcon(picture.getImg()));
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
 				view.setBtnSalvar(true);
+				view.getBtnLimpar().setEnabled(true);
 
 			}
+		}
+	}
+
+	class LimpaActionListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			resetImg();
 		}
 	}
 
 	private AbstractListModel<Picture> loadListPictures() throws RemoteException {
 
 		List<Picture> listPictures = new ArrayList<Picture>();
-		for (Entry<String,byte[]> data : node.getData().entrySet()) {
+		for (Entry<String, byte[]> data : node.getData().entrySet()) {
 			try {
 				Picture pic = (Picture) node.deserialize(data.getValue());
 				pic.setId(data.getKey());
@@ -347,7 +483,7 @@ public class ControllerAlbum {
 			}
 		};
 	}
-	
+
 	/**
 	 * Faz o hash do nome atual da imagem.
 	 */
@@ -355,24 +491,16 @@ public class ControllerAlbum {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			picture.setId(sha1(view.getTextFieldImageName().getText()));
+			try {
+				picture.setId(SHA1.digest(view.getTextFieldImageName().getText()));
+			} catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+				JOptionPane.showMessageDialog(view.getContentPane(), "Erro ao criar hash: " + e.getMessage(), // mensagem
+						"Error: hash", // titulo da janela
+						JOptionPane.ERROR_MESSAGE);
+			}
 			view.setTxtHashImg(picture.getId());
 		}
-		
-	}
-	
-	private String sha1(String input) {
-	    String sha1 = null;
-	    try {
-			MessageDigest msdDigest = MessageDigest.getInstance("SHA-1");
-			msdDigest.update(input.getBytes("UTF-8"), 0, input.length());
-			sha1 = DatatypeConverter.printHexBinary(msdDigest.digest());
-		} catch (UnsupportedEncodingException | NoSuchAlgorithmException e1) {
-			JOptionPane.showMessageDialog(view.getContentPane(), "Erro ao criar hash: " + e1.getMessage(), // mensagem
-					"Error: hash", // titulo da janela
-					JOptionPane.ERROR_MESSAGE);
-		}
-	    return sha1;
+
 	}
 
 	/**

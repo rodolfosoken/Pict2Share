@@ -3,13 +3,12 @@ package controller;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import javax.swing.JOptionPane;
-import javax.xml.bind.DatatypeConverter;
 
 import dht.Node;
+import dht.SHA1;
 import gui.ViewAlbum;
 import gui.ViewMain;
 
@@ -33,6 +32,7 @@ public class ControllerMain {
 		this.view.getChckbxSha().addActionListener(new Sha1Action());
 	}
 
+	
 	class Sha1Action implements ActionListener {
 
 		@Override
@@ -41,13 +41,21 @@ public class ControllerMain {
 		}
 
 	}
+
 	private void doHash() {
 		if (view.getChckbxSha().isSelected()) {
 			String input = view.getTxtHash().getText();
-			input = sha1(input);
+			try {
+				input = SHA1.digest(input);
+			} catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+				JOptionPane.showMessageDialog(view.getContentPane(), 
+						"Erro ao criar hash: " + e.getMessage(), // mensagem
+						"Error: hash", // titulo da janela
+						JOptionPane.ERROR_MESSAGE);
+			}
 			hashId = input;
 			view.getTxtHash().setText(hashId);
-		}else {
+		} else {
 			hashId = count + "";
 			view.getTxtHash().setText(hashId);
 		}
@@ -74,18 +82,5 @@ public class ControllerMain {
 		}
 
 	}
-	
-	private String sha1(String input) {
-	    String sha1 = null;
-	    try {
-			MessageDigest msdDigest = MessageDigest.getInstance("SHA-1");
-			msdDigest.update(input.getBytes("UTF-8"), 0, input.length());
-			sha1 = DatatypeConverter.printHexBinary(msdDigest.digest());
-		} catch (UnsupportedEncodingException | NoSuchAlgorithmException e1) {
-			JOptionPane.showMessageDialog(view.getContentPane(), "Erro ao criar hash: " + e1.getMessage(), // mensagem
-					"Error: hash", // titulo da janela
-					JOptionPane.ERROR_MESSAGE);
-		}
-	    return sha1;
-	}
+
 }

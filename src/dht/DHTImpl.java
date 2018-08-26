@@ -28,10 +28,12 @@ public class DHTImpl implements DHT {
 	private Registry registryRemote;
 	private Registry registryLocal;
 	private String status;
+	private byte[] result;
 	private boolean isConnected;
 	private boolean isInserted;
 	private boolean isStoped;
 	private boolean isRemote;
+	private boolean isFounded;
 
 	public DHTImpl(Node node) {
 		this.node = node;
@@ -40,6 +42,8 @@ public class DHTImpl implements DHT {
 		isInserted = false;
 		isStoped = false;
 		isRemote=false;
+		result = null;
+		isFounded = false;
 	}
 
 	@Override
@@ -111,7 +115,6 @@ public class DHTImpl implements DHT {
 				DHT stub = (DHT) UnicastRemoteObject.exportObject(this, 0);
 				registryLocal.bind(node.getId(), stub);
 				status = "Nova DHT Iniciada: Conectado! | " + node.getIp();
-				node.setPrev(this);
 				System.out.println(status);
 				isConnected = true;
 				isInserted = true;
@@ -161,8 +164,20 @@ public class DHTImpl implements DHT {
 	}
 
 	@Override
-	public void retrieve(String key) {
-
+	public void retrieve(String key) throws RemoteException, NotBoundException {
+		isFounded = false;
+		BigInteger keyStore = new BigInteger(key,16), 
+				thisNode = new BigInteger(node.getId());
+		Message msg = new Message(TypeMessage.RETRIEVE);
+		msg.setDest(key);
+		msg.setSource(node.toString());
+		System.out.println(node.getId()+": Enviando RETRIEVE.");
+		if(keyStore.compareTo(thisNode) < 0 && getPrev() != null)
+			getPrev().procMessage(msg);
+		else if(getNext() !=null)
+			getNext().procMessage(msg);
+		else
+			procMessage(msg);
 	}
 
 	@Override
@@ -259,22 +274,64 @@ public class DHTImpl implements DHT {
 			
 			break;
 		case LEAVE:
-			System.out.println("leave");
+			System.out.println(node.getId() + ": LEAVE recebida.");
 			break;
 		case RETRIEVE:
-			System.out.println("retrieve");
+			System.out.println(node.getId() + ": RETRIEVE recebida.");
+			BigInteger keyStore5 = new BigInteger(msg.getDest(),16), 
+					idCurrentNode5 = new BigInteger(node.getId(),16),
+					idPrev5 = new BigInteger("0");
+			if (getPrev() != null)
+				idPrev5 = new BigInteger(getPrev().getIdNode(),16);
+			if (idPrev5.compareTo(keyStore5) < 0 || (idCurrentNode5.compareTo(idPrev5) < 0)) { // se o anterior for maior que este nó,
+														// então este é o sucessor do último,
+														// e deve-se proceder com a inserção
+				if (keyStore5.compareTo(idCurrentNode5) <= 0 || getNext() == null || (idCurrentNode5.compareTo(idPrev5) < 0 && keyStore5.compareTo(idPrev5) > 0)) {
+					
+					//procura a imagem dentro do nó
+					byte[] result = node.getData().get(msg.getDest());
+					DHT respStub = (DHT) registryRemote.lookup(msg.getSource().split(";")[2]);
+					
+					if(result != null) {//se a imagem foi encontrada responder ok
+						System.out.println(node.getId() + " : RETRIEVE img encontrada.");
+						Message okResp = new Message(TypeMessage.OK);
+						okResp.setSource(node.toString());
+						okResp.setData(result);
+						respStub.procMessage(okResp);
+					}else { //se não foi encontrada então Not_found
+						System.out.println(node.getId() + " : RETRIEVE: NOT_FOUND.");
+						Message not = new Message(TypeMessage.NOT_FOUND);
+						respStub.procMessage(not);
+					}
+						
+				} else {
+					// se o src (nó ingressante) é maior que este
+					// nó, então passar para o próximo nó
+					System.out.println(node.getId() + " : STORE repassado ao próximo.");
+					this.node.getNext().procMessage(msg);
+				}
+
+			} else {
+				// se o src (nó ingressante) é menor que o antecessor
+				// deste nó, então passar ao anterior
+				System.out.println(node.getId() + " : STORE repassado ao anterior.");
+				this.node.getPrev().procMessage(msg);
+			}
 			break;
 		case NODE_GONE:
-			System.out.println("node_gone");
+			System.out.println(node.getId() + ": NODE_GONE recebida.");
 			break;
 		case OK:
-			System.out.println("ok");
+			System.out.println(node.getId() + ": OK recebida.");
+			status = "Imagem encontrada.";
+			result = msg.getData();
+			isFounded = true;
 			break;
 		case NOT_FOUND:
-			System.out.println("not_found");
+			System.out.println(node.getId() + ": NOT_FOUND recebida.");
 			break;
 		case TRANSFER:
-			System.out.println("transfer");
+			System.out.println(node.getId() + ": TRANSFER recebida.");
 			break;
 
 		default:
@@ -348,5 +405,25 @@ public class DHTImpl implements DHT {
 	public DHT getPrev() throws RemoteException {
 		return node.getPrev();
 	}
+	@Override
+	public byte[] getResult() {
+		return result;
+	}
+	@Override
+	public void setResult(byte[] result) {
+		this.result = result;
+	}
+
+	@Override
+	public boolean isFounded() {
+		return isFounded;
+	}
+
+	@Override
+	public void setFounded(boolean isFounded) {
+		this.isFounded = isFounded;
+	}
+	
+	
 
 }

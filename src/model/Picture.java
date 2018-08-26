@@ -1,5 +1,6 @@
 package model;
 
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -79,9 +80,10 @@ public class Picture implements Serializable {
 	 * Imagem
 	 * 
 	 * @return img
+	 * @throws IOException 
 	 */
-	public byte[] getImg() {
-		return img;
+	public Image getImg() throws IOException {
+		return byteArrayToImage(img);
 	}
 
 	/**
@@ -108,7 +110,7 @@ public class Picture implements Serializable {
 		// agora podemos converter para a classe
 		Picture otherObj = (Picture) other;
 		// se possuem o mesmo código e valor, então são iguais
-		return this.getId().equals(otherObj.getId()) && this.getImg().equals(otherObj.getImg());
+		return this.getId().equals(otherObj.getId()) && this.getName().equals(otherObj.getName());
 	}
 
 	@Override

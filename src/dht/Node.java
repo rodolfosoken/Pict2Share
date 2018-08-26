@@ -48,8 +48,6 @@ public class Node {
 		this.dht = new DHTImpl(this);
 		data = new HashMap<>();
 	}
-
-
 	
 	/**
 	 * Gets the id.

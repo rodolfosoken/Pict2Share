@@ -50,7 +50,7 @@ public interface DHT extends Remote{
 	 * @param key
 	 * @see #store(String, String)
 	 */
-	public void retrieve(String key) throws RemoteException;
+	public void retrieve(String key) throws RemoteException, NotBoundException;
 	
 	/**
 	 * Processa a mensagem recebida;
@@ -103,6 +103,42 @@ public interface DHT extends Remote{
 	 */
 	public DHT getNext()throws RemoteException;
 	
+	/**
+	 * Faz o registro de um nó que está em uma máquina remota
+	 * 
+	 * @param id
+	 * @param stub
+	 * @throws AccessException
+	 * @throws RemoteException
+	 * @throws AlreadyBoundException
+	 */
 	public void bindDHT(String id,DHT stub)throws AccessException, RemoteException, AlreadyBoundException;
 
+	/**
+	 *  
+	 * @return result resultado da busca
+	 * @throws RemoteException
+	 */
+	public byte[] getResult() throws RemoteException;
+
+	/**
+	 * 
+	 * @param result
+	 * @throws RemoteException
+	 */
+	public void setResult(byte[] result) throws RemoteException;
+	
+	/**
+	 * 
+	 * @return true se a imagem foi encontrada
+	 * @throws RemoteException
+	 */
+	public boolean isFounded()throws RemoteException;
+
+	/**
+	 * 
+	 * @param isFounded
+	 * @throws RemoteException
+	 */
+	public void setFounded(boolean isFounded) throws RemoteException;
 }

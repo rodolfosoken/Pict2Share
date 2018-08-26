@@ -370,6 +370,10 @@ public class DHTImpl implements DHT {
 			if (getNext() != null) {
 				DHT st2 = (DHT) registryRemote.lookup(msg.getArgs().split(";")[2]);
 				node.setNext(st2);
+				if(getIdNode().equals(getNext().getIdNode())) {
+					node.setNext(null);
+					node.setPrev(null);					
+				}else
 				System.out.println(node.getId() + ": next atualizado para: " + getNext().getIdNode());
 			}
 			break;

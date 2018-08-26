@@ -150,7 +150,7 @@ public class DHTImpl implements DHT {
 	@Override
 	public boolean store(String key, byte[] data) throws RemoteException, NotBoundException {
 		BigInteger keyStore = new BigInteger(key,16), 
-				thisNode = new BigInteger(node.getId());
+				thisNode = new BigInteger(node.getId(),16);
 		Message msg = new Message(TypeMessage.STORE);
 		msg.setDest(key);
 		msg.setSource(node.toString());
@@ -166,11 +166,11 @@ public class DHTImpl implements DHT {
 	}
 
 	@Override
-	public void retrieve(String key) throws RemoteException, NotBoundException {
+	public void retrieve(String key) throws RemoteException, NotBoundException{
 		isFounded = false;
 		isNotFounded = false;
 		BigInteger keyStore = new BigInteger(key,16), 
-				thisNode = new BigInteger(node.getId());
+				thisNode = new BigInteger(node.getId(),16);
 		Message msg = new Message(TypeMessage.RETRIEVE);
 		msg.setDest(key);
 		msg.setSource(node.toString());
@@ -251,7 +251,7 @@ public class DHTImpl implements DHT {
 			System.out.println(node.getId()+": STORE recebida.");
 			BigInteger keyStore3 = new BigInteger(msg.getDest(),16), 
 					idCurrentNode3 = new BigInteger(node.getId(),16),
-					idPrev3 = new BigInteger("0");
+					idPrev3 = new BigInteger("0",16);
 			if (getPrev() != null)
 				idPrev3 = new BigInteger(getPrev().getIdNode(),16);
 			if (idPrev3.compareTo(keyStore3) < 0 || (idCurrentNode3.compareTo(idPrev3) < 0)) { // se o anterior for maior que este nó,

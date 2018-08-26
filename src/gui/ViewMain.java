@@ -54,7 +54,8 @@ public class ViewMain extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		
-		btnNovoAlbum = new JButton("+ Novo Album");
+		btnNovoAlbum = new JButton("+ Novo Álbum");
+		btnNovoAlbum.setToolTipText("Inicializa um novo álbum com o ID e porta");
 		btnNovoAlbum.setBounds(42, 70, 342, 114);
 		btnNovoAlbum.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -85,6 +86,7 @@ public class ViewMain extends JFrame {
 		txtPorta.setColumns(10);
 		
 		chckbxSha = new JCheckBox("SHA1");
+		chckbxSha.setToolTipText("Faz o hash do ID");
 		chckbxSha.setBounds(328, 7, 78, 23);
 		contentPane.add(chckbxSha);
 	}

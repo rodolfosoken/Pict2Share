@@ -115,11 +115,13 @@ public class ViewAlbum extends JFrame {
 		panelPicture.add(lblImage);
 		
 		btnSalvar = new JButton("Salvar");
+		btnSalvar.setToolTipText("Salva a imagem");
 		btnSalvar.setEnabled(false);
 		btnSalvar.setBounds(385, 561, 89, 23);
 		contentPane.add(btnSalvar);
 		
 		textFieldPath = new JTextField();
+		textFieldPath.setToolTipText("Caminho para o arquivo inicial contendo os possíveis IP's ativos");
 		textFieldPath.setText(".\\initxt.txt");
 		textFieldPath.setBounds(147, 14, 162, 20);
 		contentPane.add(textFieldPath);
@@ -134,6 +136,7 @@ public class ViewAlbum extends JFrame {
 		contentPane.add(lblIdDoN);
 		
 		textFieldIdNode = new JTextField();
+		textFieldIdNode.setToolTipText("Atributos do nó atual");
 		textFieldIdNode.setEditable(false);
 		textFieldIdNode.setBounds(828, 92, 173, 20);
 		contentPane.add(textFieldIdNode);
@@ -150,6 +153,7 @@ public class ViewAlbum extends JFrame {
 		textFieldImageName.setColumns(10);
 		
 		btnBuscar = new JButton("Buscar");
+		btnBuscar.setToolTipText("Realiza a Busca da imagem pelo ID inserido");
 		btnBuscar.setEnabled(false);
 		btnBuscar.addActionListener(new ActionListener() {
 			@Override
@@ -172,11 +176,13 @@ public class ViewAlbum extends JFrame {
 		contentPane.add(lblStatusDht);
 		
 		btnConectar = new JButton("Conectar");
+		btnConectar.setToolTipText("Tenta se conectar à DHT lendo os IP no arquivo inicial.");
 		
 		btnConectar.setBounds(312, 13, 117, 23);
 		contentPane.add(btnConectar);
 		
 		btnDesconectar = new JButton("Desconectar");
+		btnDesconectar.setToolTipText("Sai da DHT");
 		btnDesconectar.setEnabled(false);
 		btnDesconectar.setBounds(446, 13, 117, 23);
 		contentPane.add(btnDesconectar);
@@ -198,6 +204,7 @@ public class ViewAlbum extends JFrame {
 		contentPane.add(lblProximo);
 		
 		txtNextnode = new JTextField();
+		txtNextnode.setToolTipText("(IP; Porta ; Hash) do Próximo nó");
 		txtNextnode.setEditable(false);
 		txtNextnode.setBounds(828, 141, 173, 20);
 		contentPane.add(txtNextnode);
@@ -208,22 +215,26 @@ public class ViewAlbum extends JFrame {
 		contentPane.add(lblAnterior);
 		
 		txtPrevnode = new JTextField();
+		txtPrevnode.setToolTipText("(IP; Porta ; Hash) do nó Anterior");
 		txtPrevnode.setEditable(false);
 		txtPrevnode.setBounds(828, 187, 173, 20);
 		contentPane.add(txtPrevnode);
 		txtPrevnode.setColumns(10);
 		
 		btnCarregar = new JButton("Carregar...");
+		btnCarregar.setToolTipText("Carrega uma nova imagem para ser salva na DHT");
 		btnCarregar.setEnabled(false);
 		btnCarregar.setBounds(191, 125, 138, 23);
 		contentPane.add(btnCarregar);
 		
 		btnAtualizar = new JButton("Atualizar");
+		btnAtualizar.setToolTipText("Atualiza os atributos do nó e o conteudo da lista");
 		btnAtualizar.setEnabled(false);
 		btnAtualizar.setBounds(929, 30, 89, 23);
 		contentPane.add(btnAtualizar);
 		
 		txtHashimg = new JTextField();
+		txtHashimg.setToolTipText("ID da Imagem");
 		txtHashimg.setEditable(false);
 		txtHashimg.setBounds(430, 128, 254, 20);
 		contentPane.add(txtHashimg);
@@ -234,11 +245,13 @@ public class ViewAlbum extends JFrame {
 		contentPane.add(lblHashDaImagem);
 		
 		btnCalchash = new JButton("Calc. Hash");
+		btnCalchash.setToolTipText("Faz o cálculo do Hash do nome da Imagem ");
 		btnCalchash.setEnabled(false);
 		btnCalchash.setBounds(694, 89, 98, 23);
 		contentPane.add(btnCalchash);
 		
 		btnLimpar = new JButton("Limpar");
+		btnLimpar.setToolTipText("Limpa o campo de visualização de imagem");
 		btnLimpar.setEnabled(false);
 		btnLimpar.setBounds(694, 561, 89, 23);
 		contentPane.add(btnLimpar);
@@ -248,6 +261,7 @@ public class ViewAlbum extends JFrame {
 		contentPane.add(scrollPane);
 		
 		list = new JList<Picture>();
+		list.setToolTipText("Exibe todos os dados contidos neste nó");
 		scrollPane.setViewportView(list);
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		

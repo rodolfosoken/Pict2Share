@@ -502,7 +502,13 @@ public class ControllerAlbum {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			try {
-				picture.setId(SHA1.digest(view.getTextFieldImageName().getText()));
+				if(!view.getTextFieldImageName().getText().isEmpty())
+					picture.setId(SHA1.digest(view.getTextFieldImageName().getText()));
+				else
+					JOptionPane.showMessageDialog(view.getContentPane(), 
+							"Erro ao criar hash: Campo nome está vazio", // mensagem
+							"Error: hash", // titulo da janela
+							JOptionPane.ERROR_MESSAGE);
 			} catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
 				JOptionPane.showMessageDialog(view.getContentPane(), "Erro ao criar hash: " + e.getMessage(), // mensagem
 						"Error: hash", // titulo da janela

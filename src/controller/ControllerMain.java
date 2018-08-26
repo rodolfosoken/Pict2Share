@@ -3,6 +3,8 @@ package controller;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.UnsupportedEncodingException;
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
 
 import javax.swing.JOptionPane;
@@ -20,6 +22,7 @@ public class ControllerMain {
 	private ViewMain view;
 	private String hashId;
 	private String port;
+	private String ip = "127.0.0.1";
 	private int count = 1;
 
 	public ControllerMain(ViewMain view) {
@@ -30,6 +33,14 @@ public class ControllerMain {
 		this.view.getTxtPorta().setText(port);
 		this.view.getTxtHash().setText(hashId);
 		this.view.getChckbxSha().addActionListener(new Sha1Action());
+		
+		try {
+			ip=(Inet4Address.getLocalHost().getHostAddress());
+		} catch (UnknownHostException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		this.view.getTxtIp().setText(ip);
 	}
 
 	
@@ -68,7 +79,8 @@ public class ControllerMain {
 			hashId = view.getTxtHash().getText();
 			Node node = new Node(hashId);
 			node.setPort(view.getTxtPorta().getText());
-			node.setIp("127.0.0.1");
+			node.setIp(view.getTxtIp().getText());
+			
 			ViewAlbum viewAlbum = new ViewAlbum();
 			new ControllerAlbum(viewAlbum, node);
 

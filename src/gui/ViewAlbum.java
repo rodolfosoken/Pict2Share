@@ -123,7 +123,7 @@ public class ViewAlbum extends JFrame {
 		textFieldPath = new JTextField();
 		textFieldPath.setToolTipText("Caminho para o arquivo inicial contendo os possíveis IP's ativos");
 		textFieldPath.setText(".\\initxt.txt");
-		textFieldPath.setBounds(147, 14, 162, 20);
+		textFieldPath.setBounds(147, 14, 162, 22);
 		contentPane.add(textFieldPath);
 		textFieldPath.setColumns(10);
 		
@@ -138,7 +138,7 @@ public class ViewAlbum extends JFrame {
 		textFieldIdNode = new JTextField();
 		textFieldIdNode.setToolTipText("Atributos do nó atual");
 		textFieldIdNode.setEditable(false);
-		textFieldIdNode.setBounds(828, 92, 173, 20);
+		textFieldIdNode.setBounds(828, 92, 173, 23);
 		contentPane.add(textFieldIdNode);
 		textFieldIdNode.setColumns(10);
 		
@@ -148,7 +148,7 @@ public class ViewAlbum extends JFrame {
 		
 		textFieldImageName = new JTextField();
 		textFieldImageName.setEditable(false);
-		textFieldImageName.setBounds(484, 91, 200, 20);
+		textFieldImageName.setBounds(484, 88, 200, 23);
 		contentPane.add(textFieldImageName);
 		textFieldImageName.setColumns(10);
 		
@@ -206,7 +206,7 @@ public class ViewAlbum extends JFrame {
 		txtNextnode = new JTextField();
 		txtNextnode.setToolTipText("(IP; Porta ; Hash) do Próximo nó");
 		txtNextnode.setEditable(false);
-		txtNextnode.setBounds(828, 141, 173, 20);
+		txtNextnode.setBounds(828, 141, 173, 23);
 		contentPane.add(txtNextnode);
 		txtNextnode.setColumns(10);
 		
@@ -217,7 +217,7 @@ public class ViewAlbum extends JFrame {
 		txtPrevnode = new JTextField();
 		txtPrevnode.setToolTipText("(IP; Porta ; Hash) do nó Anterior");
 		txtPrevnode.setEditable(false);
-		txtPrevnode.setBounds(828, 187, 173, 20);
+		txtPrevnode.setBounds(828, 187, 173, 23);
 		contentPane.add(txtPrevnode);
 		txtPrevnode.setColumns(10);
 		
@@ -236,7 +236,7 @@ public class ViewAlbum extends JFrame {
 		txtHashimg = new JTextField();
 		txtHashimg.setToolTipText("ID da Imagem");
 		txtHashimg.setEditable(false);
-		txtHashimg.setBounds(430, 128, 254, 20);
+		txtHashimg.setBounds(430, 125, 254, 23);
 		contentPane.add(txtHashimg);
 		txtHashimg.setColumns(10);
 		

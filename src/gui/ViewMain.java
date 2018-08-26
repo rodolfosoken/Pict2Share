@@ -26,6 +26,7 @@ public class ViewMain extends JFrame {
 	private JTextField txtHash;
 	private JTextField txtPorta;
 	private JCheckBox chckbxSha;
+	private JTextField txtIp;
 
 	/**
 	 * Launch the application.
@@ -69,8 +70,9 @@ public class ViewMain extends JFrame {
 		lblHashGerado.setBounds(5, 11, 94, 14);
 		contentPane.add(lblHashGerado);
 		
-		lblPorta = new JLabel("Porta:");
-		lblPorta.setBounds(5, 36, 46, 14);
+		lblPorta = new JLabel("IP / Porta");
+		lblPorta.setToolTipText("IP / Porta");
+		lblPorta.setBounds(5, 36, 94, 14);
 		contentPane.add(lblPorta);
 		
 		txtHash = new JTextField();
@@ -81,7 +83,7 @@ public class ViewMain extends JFrame {
 		
 		txtPorta = new JTextField();
 		txtPorta.setText("1099");
-		txtPorta.setBounds(111, 33, 86, 20);
+		txtPorta.setBounds(236, 33, 86, 20);
 		contentPane.add(txtPorta);
 		txtPorta.setColumns(10);
 		
@@ -89,8 +91,22 @@ public class ViewMain extends JFrame {
 		chckbxSha.setToolTipText("Faz o hash do ID");
 		chckbxSha.setBounds(328, 7, 78, 23);
 		contentPane.add(chckbxSha);
+		
+		txtIp = new JTextField();
+		txtIp.setText("127.0.0.1");
+		txtIp.setBounds(110, 33, 116, 20);
+		contentPane.add(txtIp);
+		txtIp.setColumns(10);
 	}
 	
+	public JTextField getTxtIp() {
+		return txtIp;
+	}
+
+	public void setTxtIp(JTextField txtIp) {
+		this.txtIp = txtIp;
+	}
+
 	public void addBtnListener(ActionListener a) {
 		btnNovoAlbum.addActionListener(a);
 	}
@@ -118,5 +134,4 @@ public class ViewMain extends JFrame {
 	public void setChckbxSha(JCheckBox chckbxSha) {
 		this.chckbxSha = chckbxSha;
 	}
-	
 }

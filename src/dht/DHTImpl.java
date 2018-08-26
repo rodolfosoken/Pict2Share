@@ -88,7 +88,6 @@ public class DHTImpl implements DHT {
 
 						// Adiciona os atributos no nó
 						// e realiza o registro do nó no RMI
-						node.setIp(Inet4Address.getLocalHost().getHostAddress());
 						DHT stub = (DHT) UnicastRemoteObject.exportObject(this, Integer.parseInt(node.getPort()));
 						registryLocal = LocateRegistry.getRegistry();
 						registryLocal.bind(node.getId(), stub);
@@ -121,7 +120,7 @@ public class DHTImpl implements DHT {
 			// Não conseguiu conectar com nenhum nó no arquivo txt
 			// irá criar o nó inicial
 			if (isConnected == false) {
-				System.setProperty("java.rmi.server.hostname",Inet4Address.getLocalHost().getHostAddress());
+				System.setProperty("java.rmi.server.hostname",node.getIp());
 				registryLocal = LocateRegistry.getRegistry();
 				DHT stub = (DHT) UnicastRemoteObject.exportObject(this, 0);
 				registryLocal.bind(node.getId(), stub);

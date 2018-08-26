@@ -37,6 +37,7 @@ public class DHTImpl implements DHT {
 	private boolean isRemote;
 	private boolean isFounded;
 	private boolean isNotFounded;
+	private DHT dhtStub;
 
 	public DHTImpl(Node node) {
 		this.node = node;
@@ -72,7 +73,7 @@ public class DHTImpl implements DHT {
 						status = "IP:" + ipPortName[0] + " Conectando...";
 						System.out.println(status);
 						registryRemote = LocateRegistry.getRegistry(ipPortName[0], Integer.parseInt(ipPortName[1]));
-						DHT dhtStub = (DHT) registryRemote.lookup(ipPortName[2]);
+						dhtStub = (DHT) registryRemote.lookup(ipPortName[2]);
 						status = node.getId() + " : " + dhtStub.getIdNode() + " ATIVO | " + ipPortName[0] + ":"
 								+ ipPortName[1];
 						System.out.println(status);
@@ -138,6 +139,11 @@ public class DHTImpl implements DHT {
 	public void bindDHT(String id, DHT stub) throws AccessException, RemoteException, AlreadyBoundException {
 		registryLocal.bind(id, stub);
 	}
+	
+	@Override
+	public void unbindDHT(String id) throws RemoteException, NotBoundException {
+		registryLocal.unbind(id);
+	}
 
 	@Override
 	public void leave() throws RemoteException, NotBoundException {
@@ -168,8 +174,8 @@ public class DHTImpl implements DHT {
 		}
 		
 		UnicastRemoteObject.unexportObject(this, true);
-		if (isRemote)
-			registryRemote.unbind(node.getId());
+		if (isRemote) 
+			dhtStub.unbindDHT(node.getId());
 		registryLocal.unbind(node.getId());
 		isConnected = false;
 		isStoped = true;

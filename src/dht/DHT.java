@@ -115,6 +115,12 @@ public interface DHT extends Remote{
 	public void bindDHT(String id,DHT stub)throws AccessException, RemoteException, AlreadyBoundException;
 
 	/**
+	 * Desregistra o stub remoto
+	 * @param id
+	 * @throws RemoteException
+	 */
+	public void unbindDHT(String id) throws RemoteException,NotBoundException;
+	/**
 	 *  
 	 * @return result resultado da busca
 	 * @throws RemoteException

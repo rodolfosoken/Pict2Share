@@ -487,6 +487,7 @@ public class ControllerAlbum {
 			fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			FileNameExtensionFilter filter = new FileNameExtensionFilter("Arquivo de imagens", "jpg", "jpeg");
 			fileChooser.setFileFilter(filter);
+			fileChooser.setCurrentDirectory(new java.io.File("."));
 			int status = fileChooser.showOpenDialog(view.getContentPane());
 			if (status == JFileChooser.APPROVE_OPTION) {
 				File file = fileChooser.getSelectedFile();

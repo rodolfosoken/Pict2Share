@@ -12,6 +12,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.HashMap;
 import java.util.Map.Entry;
 
 /**
@@ -159,6 +160,7 @@ public class DHTImpl implements DHT {
 				msgTransfer.setData(data.getValue());
 				getNext().procMessage(msgTransfer);
 			}
+			node.setData(new HashMap<>());
 			msgGone.setArgs(getNext().getNode().toString());
 			System.out.println(node.getId() + ": Enviando NODE_GONE para..." + getPrev().getIdNode());
 			getPrev().procMessage(msgGone);
